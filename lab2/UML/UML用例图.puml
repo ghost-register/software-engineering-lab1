@@ -18,7 +18,8 @@ actor "管理员" as A
 B --|> U
 S --|> U
 rectangle "校园二手交易系统" {
- usecase "注册、登录与退出" as UC1
+ usecase "登录与退出" as UC1
+ usecase "普通账号注册" as UCRegister
  usecase "组合查询与商品详情" as UC2
  usecase "预约/取消与查看结果" as UC3
  usecase "买家确认完成" as UC4
@@ -31,6 +32,7 @@ rectangle "校园二手交易系统" {
  usecase "日志查询与统计" as UC11
 }
 U --> UC1
+U --> UCRegister
 U --> UC2
 B --> UC3
 B --> UC4
