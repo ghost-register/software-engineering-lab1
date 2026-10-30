@@ -15,5 +15,6 @@ SCREENS=[
  dict(id='UI14',name='买家确认完成',kind='buyer-detail',module='M04',req=['REQ-013','REQ-014','REQ-017'],note='显示当前已确认和线下交付提醒；买家确认完成，无法交付时申请管理员关闭。'),
  dict(id='UI15',name='预约冲突反馈',kind='conflict',module='M04/M08',req=['REQ-009','REQ-010','REQ-018','REQ-024'],note='状态变化后禁用预约，解释冲突并提供刷新与查看记录，重发不产生新的业务效果。'),
  dict(id='UI16',name='异常关闭申请',kind='close-form',module='M04',req=['REQ-014'],note='仅交易参与人填写原因；提交后等待管理员核查，不直接恢复发布或自动退款。'),
- dict(id='UI17',name='商品举报',kind='report-form',module='M05',req=['REQ-015'],note='只能举报非本人商品，原因必填；同人同商品仅一条待处理举报，显示处理进度入口。')
+ dict(id='UI17',name='商品举报',kind='report-form',module='M05',req=['REQ-015'],note='只能举报非本人商品，原因必填；同人同商品仅一条待处理举报，显示处理进度入口。'),
+ dict(id='UI18',name='买家取消预约详情',kind='buyer-pending',module='M04',req=['REQ-011','REQ-017','REQ-024'],note='按用户实际反馈，将取消放入详情。仅当前买家且卖家未确认时可用，取消前显示商品与后果，冲突时重查状态。')
 ]
