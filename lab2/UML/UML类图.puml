@@ -1,0 +1,75 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+skinparam defaultFontSize 15
+title 校园二手交易系统 领域类图
+left to right direction
+class User {
+ +id: UUID
+ +username: String
+ +role: USER | ADMIN
+ +status: ACTIVE | DISABLED
+ +canOperate(object): Boolean
+}
+class Product {
+ +id: UUID
+ +sellerId: UUID
+ +title: String
+ +price: Decimal
+ +status: ProductStatus
+ +submitReview()
+ +changeStatus(expected, next)
+}
+class Reservation {
+ +id: UUID
+ +buyerId: UUID
+ +priceSnapshot: Decimal
+ +status: ReservationStatus
+ +cancel()
+ +sellerConfirm()
+ +complete()
+}
+class ReviewRecord {
+ +id: UUID
+ +decision: APPROVED | REJECTED
+ +reason: String
+}
+class Report {
+ +id: UUID
+ +reason: String
+ +status: PENDING | RESOLVED
+}
+class CloseRequest {
+ +id: UUID
+ +reason: String
+ +status: PENDING | APPROVED | REJECTED
+}
+class AuditLog {
+ +id: UUID
+ +action: String
+ +beforeState: String
+ +afterState: String
+ +result: String
+ +createdAt: DateTime
+}
+User "1" <-- "0..*" Product : 卖家
+User "1" <-- "0..*" Reservation : 买家
+Product "1" <-- "0..*" Reservation : 历史预约
+Product "1" <-- "0..*" ReviewRecord : 审核历史
+Product "1" <-- "0..*" Report : 举报
+User "1" <-- "0..*" Report : 举报人
+Reservation "1" <-- "0..*" CloseRequest : 异常申请
+User "1" <-- "0..*" AuditLog : 操作者
+note bottom of Reservation
+同一商品最多一条有效预约。
+有效状态：待卖家确认、卖家已确认。
+成交金额来自priceSnapshot。
+end note
+@enduml

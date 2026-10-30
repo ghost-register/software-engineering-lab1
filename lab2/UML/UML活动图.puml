@@ -1,0 +1,58 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+skinparam defaultFontSize 15
+title 校园二手交易系统 正常交易与取消活动图
+|卖家|
+start
+:保存商品草稿;
+:补全字段并提交审核;
+|管理员|
+if (审核通过?) then (是)
+ :商品发布;
+else (否)
+ :填写原因并退回草稿;
+ stop
+endif
+|买家|
+:查询并选择商品;
+:提交预约;
+|系统|
+if (身份、归属与当前状态合法?) then (是)
+ :创建预约并保存价格快照;
+ :商品转已预约;
+else (否)
+ :返回冲突或权限提示;
+ stop
+endif
+|买家|
+if (卖家确认前取消?) then (是)
+ |系统|
+ :预约已取消，商品恢复已发布;
+ stop
+else (否)
+ |卖家|
+ if (接受预约?) then (是)
+  :确认预约;
+ else (否)
+  :填写拒绝原因;
+  |系统|
+  :预约已拒绝，商品恢复已发布;
+  stop
+ endif
+endif
+|买家|
+:线下接收商品;
+:确认完成;
+|系统|
+:预约和商品同步已完成;
+:保留快照并记录日志;
+stop
+@enduml

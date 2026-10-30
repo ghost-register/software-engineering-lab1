@@ -1,0 +1,51 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+skinparam defaultFontSize 15
+title 校园二手交易系统 分层组件图
+top to bottom direction
+package "表现层" {
+ [普通用户网页] as Web
+ [管理员后台] as Admin
+}
+package "应用层 单体进程" {
+ [账号与授权] as Auth
+ [商品与查询] as Catalog
+ [审核与举报] as Gov
+ [预约交易] as Trade
+ [操作日志] as Audit
+ [统计查询] as Stats
+}
+database "PostgreSQL" as DB
+folder "图片文件存储" as Images
+Web --> Auth
+Admin --> Auth
+Web --> Catalog
+Web --> Trade
+Admin --> Gov
+Admin --> Stats
+Admin --> Audit
+Trade --> Catalog : 检查商品与归属
+Gov --> Trade : 违规时关闭有效预约
+Catalog --> Audit
+Trade --> Audit
+Gov --> Audit
+Auth --> DB
+Catalog --> DB
+Trade --> DB
+Gov --> DB
+Audit --> DB
+Stats --> DB : 只读汇总
+Catalog --> Images
+note bottom of DB
+业务状态更新在同一数据库事务完成。
+模块是代码边界，不拆成独立微服务。
+end note
+@enduml

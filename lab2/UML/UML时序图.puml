@@ -1,0 +1,38 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+skinparam defaultFontSize 15
+title 买家预约商品 基本时序
+actor 买家 as B
+boundary 商品详情界面 as UI
+control 预约服务 as Trade
+control 授权服务 as Auth
+database 数据库 as DB
+B -> UI : 点击预约
+UI -> Trade : reserve(productId, requestKey)
+Trade -> Auth : 校验账号、权限和商品归属
+Auth --> Trade : 允许或拒绝
+alt 校验未通过
+ Trade --> UI : 返回原因，不修改业务数据
+else 允许预约
+ Trade -> DB : 开始事务并检查当前商品状态
+ alt 商品已发布且无有效预约
+  Trade -> DB : 创建预约及价格快照
+  Trade -> DB : 商品改为已预约，保存成功日志
+  Trade -> DB : 提交事务
+  DB --> Trade : 成功
+  Trade --> UI : 返回预约编号和当前状态
+ else 状态冲突
+  Trade -> DB : 回滚
+  Trade --> UI : 商品不可预约，请刷新
+ end
+end
+UI --> B : 展示操作结果
+@enduml
