@@ -1,0 +1,19 @@
+SCREENS=[
+ dict(id='UI01',name='登录',kind='login',module='M01',req=['REQ-002','REQ-003','REQ-022'],note='普通账号进入市场，管理员进入独立后台。退出后会话失效；停用账号不可继续操作。'),
+ dict(id='UI02',name='注册',kind='register',module='M01',req=['REQ-001','REQ-022'],note='不允许用户自选管理员；用户名4至20位，密码8至64位且含字母和数字。'),
+ dict(id='UI03',name='商品市场',kind='market',module='M03',req=['REQ-008','REQ-021','REQ-024'],note='关键词、分类、价格组合查询，稳定排序与分页；公开只展示已发布商品。'),
+ dict(id='UI04',name='商品详情',kind='detail',module='M03/M04',req=['REQ-008','REQ-009','REQ-015'],note='显示卖家、价格和成色；预约仅登录非本人买家可用，举报入口关联当前商品。'),
+ dict(id='UI05',name='发布与编辑',kind='edit',module='M02',req=['REQ-004','REQ-005','REQ-007'],note='区分保存草稿与提交审核；字段和图片约束明确，发布后修改需重新审核。'),
+ dict(id='UI06',name='我的发布',kind='selling',module='M02',req=['REQ-004','REQ-005','REQ-007','REQ-012'],note='按商品状态展示可操作项；有有效预约时禁改价、主动下架，待审核可看进度。'),
+ dict(id='UI07',name='我的预约',kind='reservations',module='M04',req=['REQ-011','REQ-013','REQ-017'],note='仅当前买家的预约；分状态筛选，已完成与已关闭记录保留，可进入详情。'),
+ dict(id='UI08',name='卖家确认预约',kind='seller-detail',module='M04',req=['REQ-011','REQ-012','REQ-018'],note='对应卖家可确认或带原因拒绝；不能由卖家代买家确认完成，状态冲突重新查询。'),
+ dict(id='UI09',name='商品审核',kind='review',admin=True,module='M05',req=['REQ-006','REQ-019'],note='管理员查看提交快照，通过或填写原因驳回；重复决定不能覆盖已生效结论。'),
+ dict(id='UI10',name='举报与异常处置',kind='moderation',admin=True,module='M05',req=['REQ-014','REQ-015','REQ-016'],note='举报与关闭申请分标签处理；关闭有效预约与商品下架同步；成交后仅追加处置。'),
+ dict(id='UI11',name='统计汇总',kind='stats',admin=True,module='M07',req=['REQ-020'],note='按日期和分类筛选，显示首次发布、完成交易和快照金额；示例数字不表示真实测试。'),
+ dict(id='UI12',name='账号管理',kind='accounts',admin=True,module='M01',req=['REQ-003','REQ-022'],note='仅管理员可停用账号并记录原因；不会展示密码散列或其他账号的会话令牌。'),
+ dict(id='UI13',name='操作日志',kind='logs',admin=True,module='M06',req=['REQ-019'],note='操作人、日期、对象、结果组合查询；可追踪前后状态与原因，普通账号不能查看或改删。'),
+ dict(id='UI14',name='买家确认完成',kind='buyer-detail',module='M04',req=['REQ-013','REQ-014','REQ-017'],note='显示当前已确认和线下交付提醒；买家确认完成，无法交付时申请管理员关闭。'),
+ dict(id='UI15',name='预约冲突反馈',kind='conflict',module='M04/M08',req=['REQ-009','REQ-010','REQ-018','REQ-024'],note='状态变化后禁用预约，解释冲突并提供刷新与查看记录，重发不产生新的业务效果。'),
+ dict(id='UI16',name='异常关闭申请',kind='close-form',module='M04',req=['REQ-014'],note='仅交易参与人填写原因；提交后等待管理员核查，不直接恢复发布或自动退款。'),
+ dict(id='UI17',name='商品举报',kind='report-form',module='M05',req=['REQ-015'],note='只能举报非本人商品，原因必填；同人同商品仅一条待处理举报，显示处理进度入口。')
+]
