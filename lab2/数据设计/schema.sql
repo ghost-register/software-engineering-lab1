@@ -32,7 +32,7 @@ CREATE TABLE review_record (
  decision varchar(10) NOT NULL CHECK(decision IN ('PENDING','APPROVED','REJECTED')),
  reason text, created_at timestamptz NOT NULL DEFAULT now(), handled_at timestamptz,
  UNIQUE(product_id,submission_version),
- CHECK(decision <> 'REJECTED' OR length(trim(reason)) > 0)
+ CHECK(decision <> 'REJECTED' OR (reason IS NOT NULL AND length(trim(reason)) > 0))
 );
 CREATE TABLE reservation (
  id uuid PRIMARY KEY, product_id uuid NOT NULL REFERENCES product(id),
