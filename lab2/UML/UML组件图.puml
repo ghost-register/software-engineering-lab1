@@ -1,5 +1,6 @@
 @startuml
 skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
 skinparam backgroundColor white
 skinparam shadowing false
 skinparam roundcorner 8
@@ -8,44 +9,48 @@ skinparam classBackgroundColor #F1F5F9
 skinparam classBorderColor #64748B
 skinparam componentBackgroundColor #EFF6FF
 skinparam componentBorderColor #64748B
-skinparam defaultFontSize 15
-title 校园二手交易系统 分层组件图
+title 单体分层架构与模块交互
 top to bottom direction
-package "表现层" {
- [普通用户网页] as Web
- [管理员后台] as Admin
+skinparam linetype ortho
+rectangle "表现层" {
+ component "普通用户网页\n发布、查询、预约" as Web
+ component "管理员后台\n审核、处置、统计" as Admin
+ Web -[hidden]right- Admin
 }
-package "应用层 单体进程" {
- [账号与授权] as Auth
- [商品与查询] as Catalog
- [审核与举报] as Gov
- [预约交易] as Trade
- [操作日志] as Audit
- [统计查询] as Stats
+component "接口与访问控制\n校验身份、角色、对象归属" as API
+rectangle "应用层 同一进程与事务管理器" {
+ component "商品模块" as Catalog
+ component "交易模块" as Trade
+ component "治理模块" as Gov
+ component "统计模块" as Stats
+ component "日志模块" as Audit
+ Catalog -[hidden]right- Trade
+ Trade -[hidden]right- Gov
+ Stats -[hidden]right- Audit
+ Trade --> Catalog : 检查商品状态
+ Gov --> Trade : 关闭有效预约
+ Trade --> Audit : 操作结果
+ Gov --> Audit : 处置结果
 }
-database "PostgreSQL" as DB
-folder "图片文件存储" as Images
-Web --> Auth
-Admin --> Auth
-Web --> Catalog
-Web --> Trade
-Admin --> Gov
-Admin --> Stats
-Admin --> Audit
-Trade --> Catalog : 检查商品与归属
-Gov --> Trade : 违规时关闭有效预约
-Catalog --> Audit
-Trade --> Audit
-Gov --> Audit
-Auth --> DB
-Catalog --> DB
-Trade --> DB
-Gov --> DB
-Audit --> DB
-Stats --> DB : 只读汇总
-Catalog --> Images
+component "数据访问层\nRepository + 同一事务连接" as DAO
+database "PostgreSQL 16+\n账号、商品、预约、治理、日志" as DB
+folder "图片文件存储\n随机键、类型与大小校验" as Img
+Web --> API
+Admin --> API
+API --> Catalog
+API --> Trade
+API --> Gov
+API --> Stats
+Catalog --> DAO
+Trade --> DAO
+Gov --> DAO
+Stats --> DAO
+Audit --> DAO
+DAO --> DB
+Catalog --> Img
 note bottom of DB
-业务状态更新在同一数据库事务完成。
-模块是代码边界，不拆成独立微服务。
+商品锁顺序固定；成功日志与业务一起提交。
+拒绝或回滚后的失败日志另起事务保存。
+模块调用不是跨服务网络调用。
 end note
 @enduml

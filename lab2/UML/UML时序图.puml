@@ -1,5 +1,6 @@
 @startuml
 skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
 skinparam backgroundColor white
 skinparam shadowing false
 skinparam roundcorner 8
@@ -8,31 +9,45 @@ skinparam classBackgroundColor #F1F5F9
 skinparam classBorderColor #64748B
 skinparam componentBackgroundColor #EFF6FF
 skinparam componentBorderColor #64748B
-skinparam defaultFontSize 15
-title 买家预约商品 基本时序
+title 预约幂等处理与商品行锁
 actor 买家 as B
-boundary 商品详情界面 as UI
-control 预约服务 as Trade
-control 授权服务 as Auth
-database 数据库 as DB
-B -> UI : 点击预约
-UI -> Trade : reserve(productId, requestKey)
-Trade -> Auth : 校验账号、权限和商品归属
-Auth --> Trade : 允许或拒绝
-alt 校验未通过
- Trade --> UI : 返回原因，不修改业务数据
-else 允许预约
- Trade -> DB : 开始事务并检查当前商品状态
- alt 商品已发布且无有效预约
-  Trade -> DB : 创建预约及价格快照
-  Trade -> DB : 商品改为已预约，保存成功日志
-  Trade -> DB : 提交事务
-  DB --> Trade : 成功
-  Trade --> UI : 返回预约编号和当前状态
- else 状态冲突
-  Trade -> DB : 回滚
-  Trade --> UI : 商品不可预约，请刷新
+boundary 商品详情页 as UI
+control "TradeService\n事务协调" as T
+control "Authorization" as A
+database PostgreSQL as DB
+B -> UI : 预约商品
+UI -> T : productId + requestKey + 参数
+T -> A : 校验登录/停用/归属
+A --> T : 校验结果
+alt 未授权或本人商品
+ T -> DB : 独立写失败日志
+ T --> UI : 401/403与原因
+else 授权通过
+ T -> DB : BEGIN；抢占请求键\nUNIQUE(buyer, action, key)
+ alt 已有同键且参数不同
+  T -> DB : ROLLBACK；另写失败日志
+  T --> UI : 409 请求标识参数不一致
+ else 已有同键且参数一致
+  T -> DB : 读取原响应与当前商品/预约状态
+  T -> DB : COMMIT
+  T --> UI : 原业务结果 + 当前状态\n取消后重发不恢复预约
+ else 新键
+  T -> DB : SELECT product FOR UPDATE\n读取最新状态与价格
+  alt 当前已发布且无有效预约
+   T -> DB : INSERT reservation + 价格快照\n部分唯一索引兜底
+   T -> DB : UPDATE product=已预约\n成功日志 + 请求结果
+   T -> DB : COMMIT
+   T --> UI : 预约编号、待卖家确认
+  else 状态冲突或中途失败
+   T -> DB : ROLLBACK；独立失败日志
+   T --> UI : 冲突提示；允许查询最终结果
+  end
  end
 end
-UI --> B : 展示操作结果
+UI --> B : 展示当前状态与可用操作
+note over T,DB
+所有商品/预约转换均先锁商品，再锁预约。
+请求结果至少保存24小时；清理过期结果
+不解除状态检查与唯一有效预约约束。
+end note
 @enduml

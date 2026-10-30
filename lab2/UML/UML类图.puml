@@ -1,5 +1,6 @@
 @startuml
 skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
 skinparam backgroundColor white
 skinparam shadowing false
 skinparam roundcorner 8
@@ -8,68 +9,78 @@ skinparam classBackgroundColor #F1F5F9
 skinparam classBorderColor #64748B
 skinparam componentBackgroundColor #EFF6FF
 skinparam componentBorderColor #64748B
-skinparam defaultFontSize 15
-title 校园二手交易系统 领域类图
-left to right direction
+title 领域类图 核心对象与持久化关系
+top to bottom direction
+hide circle
+hide empty methods
 class User {
  +id: UUID
- +username: String
+ +username: String {unique}
+ +passwordHash: String
  +role: USER | ADMIN
  +status: ACTIVE | DISABLED
- +canOperate(object): Boolean
+ +authorize(action, object)
 }
 class Product {
- +id: UUID
- +sellerId: UUID
- +title: String
- +price: Decimal
+ +id, sellerId, categoryId: UUID
+ +title, description, condition: String
+ +price: Decimal(7,2)
  +status: ProductStatus
- +submitReview()
- +changeStatus(expected, next)
+ +version: Integer
+ +firstPublishedAt: DateTime?
+ +transition(expected, next)
 }
 class Reservation {
- +id: UUID
- +buyerId: UUID
- +priceSnapshot: Decimal
+ +id, productId, buyerId: UUID
+ +priceSnapshot: Decimal(7,2)
  +status: ReservationStatus
- +cancel()
- +sellerConfirm()
- +complete()
+ +createdAt, confirmedAt?, completedAt?: DateTime
+ +cancel() / confirm() / complete()
+}
+class RequestResult {
+ +buyerId, action, requestKey: unique tuple
+ +parameterHash: String
+ +response: JSON
+ +expiresAt: DateTime
+ +matchParameters(hash)
 }
 class ReviewRecord {
- +id: UUID
- +decision: APPROVED | REJECTED
- +reason: String
+ +id, productId, reviewerId: UUID
+ +submissionVersion: Integer
+ +decision, reason: String
+ +createdAt: DateTime
 }
 class Report {
- +id: UUID
- +reason: String
- +status: PENDING | RESOLVED
+ +id, productId, reporterId: UUID
+ +status, reason, result: String
+ +handledBy?, handledAt?: optional
 }
 class CloseRequest {
- +id: UUID
- +reason: String
- +status: PENDING | APPROVED | REJECTED
+ +id, reservationId, applicantId: UUID
+ +status, reason: String
+ +handledBy?, handledAt?: optional
 }
 class AuditLog {
- +id: UUID
- +action: String
- +beforeState: String
- +afterState: String
- +result: String
- +createdAt: DateTime
+ +id, actorId?, objectId: UUID
+ +action, beforeState, afterState: String
+ +result, reason, createdAt: audit data
 }
 User "1" <-- "0..*" Product : 卖家
 User "1" <-- "0..*" Reservation : 买家
 Product "1" <-- "0..*" Reservation : 历史预约
-Product "1" <-- "0..*" ReviewRecord : 审核历史
-Product "1" <-- "0..*" Report : 举报
-User "1" <-- "0..*" Report : 举报人
-Reservation "1" <-- "0..*" CloseRequest : 异常申请
-User "1" <-- "0..*" AuditLog : 操作者
+Reservation "0..1" <-- "0..*" RequestResult : 原业务结果
+Product "1" <-- "0..*" ReviewRecord
+Product "1" <-- "0..*" Report
+Reservation "1" <-- "0..*" CloseRequest
+User "0..1" <-- "0..*" AuditLog : 未登录失败可无用户
 note bottom of Reservation
-同一商品最多一条有效预约。
-有效状态：待卖家确认、卖家已确认。
-成交金额来自priceSnapshot。
+UNIQUE(productId) WHERE status IN
+(待卖家确认, 卖家已确认)
+禁止把商品全部历史预约设为一对一。
+end note
+note bottom of Product
+Category与ProductImage采用独立表。
+分类/图片细节见schema.sql，
+此图突出交易与治理关系。
 end note
 @enduml

@@ -1,0 +1,48 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+title 商品生命周期与终态约束
+hide empty description
+state "草稿" as Draft
+state "待审核" as Pending
+state "已发布" as Published
+state "已预约" as Reserved
+state "已确认" as Confirmed
+state "已完成" as Completed
+state "已下架" as Offline
+[*] --> Draft : 卖家创建
+Draft --> Pending : 完整提交
+Pending --> Draft : 管理员驳回\n写明原因
+Pending --> Published : 审核通过
+Published --> Pending : 卖家修改\n无有效预约
+Published --> Offline : 卖家主动下架
+Published --> Reserved : 非本人买家预约\n建立唯一有效预约
+Reserved --> Published : 买家取消/卖家拒绝\n预约变为终态
+Reserved --> Confirmed : 对应卖家确认
+Confirmed --> Completed : 对应买家确认完成
+Confirmed --> Offline : 管理员批准异常关闭\n预约同步关闭
+Reserved --> Offline : 管理员违规处置\n预约同步关闭
+Published --> Offline : 管理员违规处置
+Pending --> Offline : 管理员违规处置
+Draft --> Offline : 管理员违规处置
+Offline --> Pending : 卖家重新提交
+Completed --> Completed : 追加违规处置记录\n保持成交事实
+note right of Completed
+禁止重新预约、回退或物理删除。
+下架先成功则后续完成失败；
+完成先成功则处置仅追加记录。
+end note
+note bottom of Reserved
+商品已预约 ⇔ 预约待卖家确认
+商品已确认 ⇔ 预约卖家已确认
+取消/拒绝/关闭/完成预约不恢复有效。
+end note
+@enduml

@@ -1,0 +1,50 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
+skinparam backgroundColor white
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam ArrowColor #475569
+skinparam classBackgroundColor #F1F5F9
+skinparam classBorderColor #64748B
+skinparam componentBackgroundColor #EFF6FF
+skinparam componentBorderColor #64748B
+title 三类业务角色与权限边界
+left to right direction
+actor "普通账号" as U
+actor "买家" as B
+actor "卖家" as S
+actor "管理员" as A
+B --|> U
+S --|> U
+rectangle "校园二手交易系统" {
+ usecase "注册、登录与退出" as UC1
+ usecase "组合查询与商品详情" as UC2
+ usecase "预约/取消与查看结果" as UC3
+ usecase "买家确认完成" as UC4
+ usecase "草稿/提交/修改/下架" as UC5
+ usecase "卖家确认或拒绝预约" as UC6
+ usecase "提交举报或异常申请" as UC7
+ usecase "审核商品" as UC8
+ usecase "违规与异常处置" as UC9
+ usecase "账号停用与权限检查" as UC10
+ usecase "日志查询与统计" as UC11
+}
+U --> UC1
+U --> UC2
+B --> UC3
+B --> UC4
+S --> UC5
+S --> UC6
+U --> UC7
+A --> UC1
+A --> UC8
+A --> UC9
+A --> UC10
+A --> UC11
+note bottom of U
+买家/卖家为同一普通账号的业务角色，
+不是两个需要重复注册的用户实体。
+匿名访客可浏览已发布商品。
+end note
+@enduml
