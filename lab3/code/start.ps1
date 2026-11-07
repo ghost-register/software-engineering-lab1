@@ -10,8 +10,11 @@ if (-not (Test-Path -LiteralPath $projectPython)) {
     & $bootstrapPython -m venv .venv
     if ($LASTEXITCODE -ne 0) { throw 'Could not create the virtual environment.' }
 }
-& $projectPython -m pip install -e .
-if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
+$packageCommand = Join-Path $PSScriptRoot '.venv/Scripts/campus-market.exe'
+if (-not (Test-Path -LiteralPath $packageCommand)) {
+    & $projectPython -m pip install -e .
+    if ($LASTEXITCODE -ne 0) { throw 'Dependency installation failed.' }
+}
 if (-not (Test-Path -LiteralPath 'instance/market.sqlite3')) {
     & $projectPython -m campus_market.cli --data-dir instance demo
     if ($LASTEXITCODE -ne 0) { throw 'Demo initialization failed.' }

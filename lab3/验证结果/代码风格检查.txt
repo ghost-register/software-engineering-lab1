@@ -30,7 +30,7 @@ External dependencies
       \-ImageDraw (campus_market.seed)
     flask (campus_market.web)
     waitress (campus_market.cli)
-    werkzeug 
+    werkzeug
       \-exceptions (campus_market.web)
       \-security (campus_market.auth)
 
