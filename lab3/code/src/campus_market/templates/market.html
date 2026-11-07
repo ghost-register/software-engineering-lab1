@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% macro cards(items) %}<div class="grid">{% for item in items %}
+<a class="card product-card" href="/products/{{ item.id }}">
+  <div class="product-art">{{ item.category }}</div><h3>{{ item.title }}</h3>
+  <strong class="price">{{ item.price_cents|yuan }}</strong><p>{{ item.condition }} · {{ item.seller_name }}</p>
+</a>{% endfor %}</div>{% endmacro %}
+{% block content %}
+<h1>商品市场</h1><section class="hero"><h2>让闲置，在校园继续发光</h2><p>找到合适的商品，预约后再约定线下交付。</p></section>
+<form class="filters" method="get">
+  <label>关键词<input name="keyword" value="{{ request.args.get('keyword','') }}" placeholder="书籍、数码、运动器材"></label>
+  <label>分类<select name="category"><option value="">全部分类</option>{% for c in categories %}<option {% if request.args.get('category')==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+  <label>最低价<input name="minimum" value="{{ request.args.get('minimum','') }}" type="number" step="0.01" min="0.01"></label>
+  <label>最高价<input name="maximum" value="{{ request.args.get('maximum','') }}" type="number" step="0.01" min="0.01"></label>
+  <label>排序<select name="sort">{% for v,t in [('newest','最新发布'),('price_asc','价格从低到高'),('price_desc','价格从高到低')] %}<option value="{{ v }}" {% if request.args.get('sort','newest')==v %}selected{% endif %}>{{ t }}</option>{% endfor %}</select></label>
+  <button class="primary">查询</button>
+</form>
+{% if results.total %}<p>共 {{ results.total }} 件符合条件的商品</p>{{ cards(results['items']) }}
+<div class="actions">{% if results.page>1 %}<a href="{{ url_for('market', **dict(request.args, page=results.page-1)) }}">上一页</a>{% endif %}
+<span>第 {{ results.page }} 页</span>{% if results.page*results.page_size<results.total %}<a href="{{ url_for('market', **dict(request.args, page=results.page+1)) }}">下一页</a>{% endif %}</div>
+{% else %}<section class="card"><h2>没有找到符合当前筛选的商品</h2><p>筛选条件已保留，可以调整关键词、分类或价格后重试。</p></section>
+<h2>其他已发布商品 · 推荐</h2><p>以下商品不属于当前筛选结果，按最新发布时间展示。</p>
+{% if recommendations %}{{ cards(recommendations) }}{% else %}<p>暂无可推荐商品。</p>{% endif %}{% endif %}
+{% endblock %}

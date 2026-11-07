@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <title>{% block title %}拾集 · 校园二手交易{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+  <script src="{{ url_for('static', filename='app.js') }}" defer></script>
+</head>
+<body>
+<header><a class="brand" href="/">拾集</a><span>校园二手交易</span><nav>
+  <a href="/">商品市场</a>
+  {% if identity %}<a href="/selling">我的发布</a><a href="/reservations">我的预约</a>
+  <a href="/reservations?side=seller">卖家待办</a><a href="/reports">我的举报</a>
+  {% if identity.user.role == 'ADMIN' %}<a href="/admin">管理后台</a>{% endif %}
+  {% endif %}</nav>
+  {% if identity %}<span>{{ identity.user.username }}</span>
+  <button data-action="/api/auth/session" data-method="DELETE" data-next="/">退出</button>
+  {% else %}<a href="/auth/login">登录</a><a href="/auth/register">注册</a>{% endif %}
+</header>
+<main><div id="notice" role="status" aria-live="polite" hidden></div>
+{% block content %}{% endblock %}</main>
+<dialog id="confirmation" aria-labelledby="confirm-title">
+  <h2 id="confirm-title">确认操作</h2><p id="confirm-message"></p>
+  <div class="actions"><button id="keep-action" autofocus>暂不操作</button>
+  <button id="confirm-action" class="primary">确认</button></div>
+</dialog>
+<footer>校园内线下交付 · 价格以预约时快照为准 · 演示账号仅供本地实验</footer>
+</body></html>

@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=70", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "campus-market-lab3"
+version = "0.1.0"
+description = "Campus second-hand marketplace course implementation"
+requires-python = ">=3.11"
+dependencies = ["Flask>=3.1,<4", "Pillow>=11,<14", "waitress>=3,<4"]
+
+[project.optional-dependencies]
+dev = ["pylint>=3,<5", "build>=1,<2"]
+
+[project.scripts]
+campus-market = "campus_market.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+campus_market = ["schema.sql", "templates/*.html", "static/*.css", "static/*.js"]
+
+[tool.pylint.main]
+py-version = "3.11"
+
+[tool.pylint.format]
+max-line-length = 100
+
+[tool.pylint.design]
+max-args = 9
+max-positional-arguments = 9
+max-locals = 25
+min-public-methods = 0
+
+[tool.pylint.messages_control]
+disable = ["too-few-public-methods", "duplicate-code", "import-error"]

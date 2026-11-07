@@ -1,0 +1,2 @@
+{% extends 'base.html' %}
+{% block content %}<h1>{{ title }}</h1><div class="card table-scroll"><table><tr><th>商品</th><th>原因</th><th>状态</th><th>结论</th></tr>{% for row in items %}<tr><td>{{ row.product_id }}</td><td>{{ row.reason }}</td><td>{{ row.status }}</td><td>{{ row.result or '等待处理' }}</td></tr>{% else %}<tr><td colspan="4">暂无记录</td></tr>{% endfor %}</table></div>{% endblock %}

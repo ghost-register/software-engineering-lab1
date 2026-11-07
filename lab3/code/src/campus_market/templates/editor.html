@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}<h1>{{ '编辑商品' if product else '发布商品草稿' }}</h1>
+{% if product and product.latest_review and product.latest_review.decision=='REJECTED' %}<section class="card warning"><h2>审核驳回，已退回草稿</h2><p class="description">{{ product.latest_review.reason }}</p><p>审核时间：{{ product.latest_review.handled_at }}</p></section>{% endif %}
+<form class="card" data-api="{{ '/api/products/'+product.id if product else '/api/products' }}" data-method="{{ 'PATCH' if product else 'POST' }}" data-created="product">
+{% if product %}<input type="hidden" name="version" value="{{ product.version }}">{% endif %}
+<label>标题<input name="title" maxlength="50" value="{{ product.title if product else '' }}"></label>
+<div class="filters"><label>分类<select name="category"><option value="">请选择</option>{% for c in categories %}<option {% if product and product.category==c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></label>
+<label>成色<input name="condition" maxlength="40" value="{{ product.condition if product else '' }}"></label>
+<label>价格（元）<input name="price" type="number" min="0.01" max="99999.99" step="0.01" value="{{ '%.2f'|format(product.price_cents/100) if product and product.price_cents else '' }}"></label></div>
+<label>描述<textarea name="description" maxlength="1000">{{ product.description if product else '' }}</textarea></label>
+<button class="primary">保存{{ '修改' if product else '草稿' }}</button><p>草稿可暂缺字段；修改已发布商品会重新进入审核。</p></form>
+{% if product %}<section class="card"><h2>商品图片</h2><p>提交审核需1至5张真实JPEG/PNG，每张最多5MB。图片只在草稿或下架状态维护。</p>
+<div class="grid">{% for image in product.images %}<div><img class="thumbnail" src="/api/images/{{ image.id }}" alt="商品图"><button data-action="/api/products/{{ product.id }}/images/{{ image.id }}" data-method="DELETE">删除图片</button></div>{% endfor %}</div>
+<form data-upload="/api/products/{{ product.id }}/images"><label>选择图片<input name="image" type="file" accept="image/png,image/jpeg" required></label><button>上传图片</button></form></section>
+<div class="actions">{% if product.status in ['DRAFT','OFFLINE'] %}<button class="primary" data-action="/api/products/{{ product.id }}/submit" data-version="{{ product.version }}">提交审核</button>{% endif %}
+{% if product.status=='PUBLISHED' %}<button data-action="/api/products/{{ product.id }}/offline" data-version="{{ product.version }}">主动下架</button>{% endif %}
+{% if product.status=='DRAFT' and not product.latest_review %}<button data-action="/api/products/{{ product.id }}" data-method="DELETE" data-version="{{ product.version }}" data-next="/selling" data-confirm="删除未提交草稿及其图片？">删除草稿</button>{% endif %}</div>{% endif %}
+{% endblock %}

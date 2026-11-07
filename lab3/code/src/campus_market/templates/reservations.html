@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}<h1>{{ '预约详情' if detail else '交易记录' }}</h1>
+{% if not detail %}<div class="actions"><a href="/reservations">买家视角</a><a href="/reservations?side=seller">卖家视角</a></div><div class="card table-scroll"><table><tr><th>商品</th><th>预约价格快照</th><th>状态</th><th>操作</th></tr>
+{% for row in items %}<tr><td>{{ row.title }}</td><td>{{ row.price_snapshot|yuan }}</td><td>{{ row.status }}</td><td><a href="/reservations/{{ row.id }}">查看详情</a></td></tr>{% else %}<tr><td colspan="4">暂无记录</td></tr>{% endfor %}</table></div>
+{% else %}<section class="card"><span class="badge">{{ detail.status }}</span><h2>{{ detail.title }} · {{ detail.price_snapshot|yuan }}</h2><p>预约编号：{{ detail.id }}</p><p>创建时间：{{ detail.created_at }}</p><p>原因：{{ detail.reason or '—' }}</p>
+<div class="actions">{% if detail.status=='PENDING_SELLER' %}
+{% if identity.user.id==detail.buyer_id %}<button data-action="/api/reservations/{{ detail.id }}/cancel" data-confirm="取消后商品恢复可预约，其他买家可以预约。是否取消本次预约？" data-safe-label="暂不取消">取消本次预约</button>
+{% elif identity.user.id==detail.seller_id %}<button class="primary" data-action="/api/reservations/{{ detail.id }}/confirm">确认预约</button>{% endif %}
+{% elif detail.status=='SELLER_CONFIRMED' and identity.user.id==detail.buyer_id %}<button class="primary" data-action="/api/reservations/{{ detail.id }}/complete" data-confirm="请确认已经收到商品并完成线下交易。">确认交易完成</button>{% endif %}</div></section>
+{% if detail.status=='PENDING_SELLER' and identity.user.id==detail.seller_id %}<form class="card" data-api="/api/reservations/{{ detail.id }}/reject"><label>拒绝原因<textarea name="reason" required></textarea></label><button>拒绝预约</button></form>{% endif %}
+{% if detail.status=='SELLER_CONFIRMED' %}<form class="card" data-api="/api/reservations/{{ detail.id }}/close-requests"><h2>无法完成交付？</h2><label>异常原因<textarea name="reason" required></textarea></label><button>提交异常关闭申请</button><p>提交后等待管理员核查，不会直接取消交易。</p></form>{% endif %}{% endif %}
+{% endblock %}

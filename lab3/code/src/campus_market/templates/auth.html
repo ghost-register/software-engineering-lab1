@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block content %}<div class="auth-layout"><section class="hero"><h1>让闲置，<br>在校园继续发光</h1><p>普通账号即可买卖，管理员使用独立后台。</p></section>
+<form class="card" data-api="/api/auth/{{ mode }}" data-next="{{ '/' if mode=='login' else '/auth/login' }}">
+<h2>{{ '登录' if mode=='login' else '创建普通账号' }}</h2>
+<label>用户名<input name="username" required minlength="4" maxlength="20" autocomplete="username"></label>
+<label>密码<input name="password" type="password" required minlength="8" maxlength="64" autocomplete="{{ 'current-password' if mode=='login' else 'new-password' }}"></label>
+{% if mode=='register' %}<p>用户名4至20位字母、数字或下划线；密码8至64位，含字母和数字。</p>{% endif %}
+<button class="primary">{{ '登录' if mode=='login' else '注册' }}</button></form></div>{% endblock %}

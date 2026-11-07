@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}<h1>商品详情</h1><section class="card detail-layout">
+<div>{% for image in product.images %}<img class="uploaded" src="/api/images/{{ image.id }}" alt="{{ product.title }}实物图{{ loop.index }}">{% else %}<div class="product-art">暂无图片</div>{% endfor %}</div>
+<div><p class="badge">{{ product.status }}</p><h2>{{ product.title or '未命名草稿' }}</h2><p class="price">{{ product.price_cents|yuan }}</p>
+<p>卖家：{{ product.seller_name }} · {{ product.category }} · {{ product.condition }}</p><p class="description">{{ product.description }}</p>
+<div class="actions">{% if identity and identity.user.id==product.seller_id %}<a class="button" href="/products/{{ product.id }}/edit">编辑 / 查看审核原因</a>
+{% elif identity and product.status=='PUBLISHED' %}<button class="primary" data-reserve="{{ product.id }}">预约商品</button><button data-recover="{{ product.id }}">查询上次预约结果</button>
+{% elif not identity %}<a class="button" href="/auth/login">登录后预约</a>{% endif %}</div>
+<p>卖家确认前可以取消；确认后无法交付时，需申请管理员处理。</p></div></section>
+{% if identity and identity.user.id!=product.seller_id %}<form class="card" data-api="/api/products/{{ product.id }}/reports"><h2>举报商品</h2><label>举报原因<textarea name="reason" required maxlength="1000"></textarea></label><button>提交举报</button></form>{% endif %}
+{% endblock %}
