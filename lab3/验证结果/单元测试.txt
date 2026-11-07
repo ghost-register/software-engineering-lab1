@@ -1,0 +1,25 @@
+test_actual_image_validation_and_five_image_limit (test_market.MarketCase.test_actual_image_validation_and_five_image_limit) ... ok
+test_approved_exception_closes_both_objects (test_market.MarketCase.test_approved_exception_closes_both_objects) ... ok
+test_audits_never_contain_password_or_active_session_token (test_market.MarketCase.test_audits_never_contain_password_or_active_session_token) ... ok
+test_cancel_confirm_race_has_one_legal_result (test_market.MarketCase.test_cancel_confirm_race_has_one_legal_result) ... ok
+test_completed_trade_cannot_be_closed_by_stale_application (test_market.MarketCase.test_completed_trade_cannot_be_closed_by_stale_application) ... ok
+test_consistency_and_minimum_log_retention (test_market.MarketCase.test_consistency_and_minimum_log_retention) ... ok
+test_expired_edit_and_review_cannot_overwrite (test_market.MarketCase.test_expired_edit_and_review_cannot_overwrite) ... ok
+test_foreign_keys_unique_index_and_backup (test_market.MarketCase.test_foreign_keys_unique_index_and_backup) ... ok
+test_http_csrf_permissions_and_real_pages (test_market.MarketCase.test_http_csrf_permissions_and_real_pages) ... ok
+test_idempotency_conflict_cancelled_old_key_and_new_key (test_market.MarketCase.test_idempotency_conflict_cancelled_old_key_and_new_key) ... ok
+test_incomplete_draft_and_complete_submission (test_market.MarketCase.test_incomplete_draft_and_complete_submission) ... ok
+test_money_and_validation_edges (test_market.MarketCase.test_money_and_validation_edges) ... ok
+test_price_snapshot_completion_statistics_and_no_double_count (test_market.MarketCase.test_price_snapshot_completion_statistics_and_no_double_count) ... ok
+test_query_combination_visibility_and_recommendation_separation (test_market.MarketCase.test_query_combination_visibility_and_recommendation_separation) ... ok
+test_registration_role_and_case_insensitive_uniqueness (test_market.MarketCase.test_registration_role_and_case_insensitive_uniqueness) ... ok
+test_rejected_review_retains_reason_and_resubmits (test_market.MarketCase.test_rejected_review_retains_reason_and_resubmits) ... ok
+test_reporting_duplicate_resolution_and_ownership (test_market.MarketCase.test_reporting_duplicate_resolution_and_ownership) ... ok
+test_sessions_logout_and_disabled_account (test_market.MarketCase.test_sessions_logout_and_disabled_account) ... ok
+test_ten_injected_failures_roll_back_both_objects (test_market.MarketCase.test_ten_injected_failures_roll_back_both_objects) ... ok
+test_twenty_buyers_ten_rounds_unique_winner (test_market.MarketCase.test_twenty_buyers_ten_rounds_unique_winner) ... ok
+
+----------------------------------------------------------------------
+Ran 20 tests in 50.483s
+
+OK

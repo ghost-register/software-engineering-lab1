@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = ["Flask>=3.1,<4", "Pillow>=11,<14", "waitress>=3,<4"]
 
 [project.optional-dependencies]
-dev = ["pylint>=3,<5", "build>=1,<2"]
+dev = ["pylint>=3,<5", "build>=1,<2", "black>=26,<27"]
 
 [project.scripts]
 campus-market = "campus_market.cli:main"
@@ -34,4 +34,4 @@ max-locals = 25
 min-public-methods = 0
 
 [tool.pylint.messages_control]
-disable = ["too-few-public-methods", "duplicate-code", "import-error"]
+disable = ["too-few-public-methods", "duplicate-code"]

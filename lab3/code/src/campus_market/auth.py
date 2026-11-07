@@ -25,18 +25,29 @@ class AuthService(Service):
     def register(self, data: dict) -> dict:
         """Create a normal account and never echo its password hash."""
         try:
-            require(not (set(data) - {"username", "password"}),
-                    "注册只接受用户名和密码", 422, "VALIDATION")
+            require(
+                not (set(data) - {"username", "password"}),
+                "注册只接受用户名和密码",
+                422,
+                "VALIDATION",
+            )
             name = validation.username(data.get("username"))
             secret = validation.password(data.get("password"))
             hashed = generate_password_hash(secret, method="scrypt")
             identifier = new_id()
             with self.database.transaction() as connection:
                 repo = Repository(connection)
-                repo.insert("users", {
-                    "id": identifier, "username": name, "password_hash": hashed,
-                    "role": "USER", "status": "ACTIVE", "created_at": now(),
-                })
+                repo.insert(
+                    "users",
+                    {
+                        "id": identifier,
+                        "username": name,
+                        "password_hash": hashed,
+                        "role": "USER",
+                        "status": "ACTIVE",
+                        "created_at": now(),
+                    },
+                )
                 audit(repo, identifier, "REGISTER", identifier, "SUCCESS", after="ACTIVE")
                 return User.from_row(repo.get("users", identifier)).to_dict()
         except sqlite3.IntegrityError as exc:
@@ -52,14 +63,23 @@ class AuthService(Service):
         secret = validation.password(secret)
         with self.database.transaction() as connection:
             repo = Repository(connection)
-            require(repo.one("SELECT id FROM users WHERE username=?", (name,)) is None,
-                    "账号已存在", 409)
+            require(
+                repo.one("SELECT id FROM users WHERE username=?", (name,)) is None,
+                "账号已存在",
+                409,
+            )
             identifier = new_id()
-            repo.insert("users", {
-                "id": identifier, "username": name,
-                "password_hash": generate_password_hash(secret, method="scrypt"),
-                "role": "ADMIN", "status": "ACTIVE", "created_at": now(),
-            })
+            repo.insert(
+                "users",
+                {
+                    "id": identifier,
+                    "username": name,
+                    "password_hash": generate_password_hash(secret, method="scrypt"),
+                    "role": "ADMIN",
+                    "status": "ACTIVE",
+                    "created_at": now(),
+                },
+            )
             audit(repo, identifier, "PROVISION_ADMIN", identifier, "SUCCESS", after="ACTIVE")
             return User.from_row(repo.get("users", identifier)).to_dict()
 
@@ -69,16 +89,26 @@ class AuthService(Service):
         secret = data.get("password")
         actor_id = None
         try:
-            require(isinstance(name, str) and isinstance(secret, str)
-                    and len(name) <= 20 and len(secret) <= 64,
-                    "用户名或密码错误", 401, "BAD_CREDENTIALS")
+            require(
+                isinstance(name, str)
+                and isinstance(secret, str)
+                and len(name) <= 20
+                and len(secret) <= 64,
+                "用户名或密码错误",
+                401,
+                "BAD_CREDENTIALS",
+            )
             with self.database.read() as connection:
                 row = Repository(connection).one("SELECT * FROM users WHERE username=?", (name,))
             # Perform a hash verification even for an unknown username.
             stored = row["password_hash"] if row else generate_password_hash("dummy12345")
             valid = check_password_hash(stored, secret)
-            require(row is not None and valid and row["status"] == "ACTIVE",
-                    "用户名或密码错误", 401, "BAD_CREDENTIALS")
+            require(
+                row is not None and valid and row["status"] == "ACTIVE",
+                "用户名或密码错误",
+                401,
+                "BAD_CREDENTIALS",
+            )
             actor_id = row["id"]
             token = secrets.token_urlsafe(32)
             csrf = secrets.token_urlsafe(32)
@@ -86,10 +116,15 @@ class AuthService(Service):
             with self.database.transaction() as connection:
                 repo = Repository(connection)
                 user = repo.actor(actor_id)
-                repo.insert("sessions", {
-                    "token_hash": token_hash(token), "user_id": actor_id,
-                    "csrf_token": csrf, "expires_at": expiry,
-                })
+                repo.insert(
+                    "sessions",
+                    {
+                        "token_hash": token_hash(token),
+                        "user_id": actor_id,
+                        "csrf_token": csrf,
+                        "expires_at": expiry,
+                    },
+                )
                 audit(repo, actor_id, "LOGIN", actor_id, "SUCCESS")
             return {"token": token, "csrf_token": csrf, "user": user.to_dict()}
         except DomainError as exc:
@@ -123,6 +158,7 @@ class AuthService(Service):
 
     def disable(self, actor_id: str, user_id: str, reason: str) -> dict:
         """Disable normal accounts and revoke all of their current sessions."""
+
         def operation(repo, actor):
             repo.admin(actor.id)
             reason_text = validation.text(reason, "停用原因", 1000)
@@ -130,6 +166,8 @@ class AuthService(Service):
             require(target["role"] == "USER", "此入口只能停用普通账号", 403, "FORBIDDEN")
             repo.update("users", user_id, {"status": "DISABLED"})
             repo.connection.execute("DELETE FROM sessions WHERE user_id=?", (user_id,))
-            return Change({"id": user_id, "status": "DISABLED"},
-                          target["status"], "DISABLED", reason_text)
+            return Change(
+                {"id": user_id, "status": "DISABLED"}, target["status"], "DISABLED", reason_text
+            )
+
         return self.perform(actor_id, "DISABLE_ACCOUNT", user_id, operation)

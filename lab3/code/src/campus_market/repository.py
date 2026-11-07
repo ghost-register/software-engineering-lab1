@@ -4,10 +4,20 @@ import sqlite3
 
 from .domain import DomainError, User, require
 
-TABLES = frozenset({
-    "users", "sessions", "products", "images", "reviews", "reservations",
-    "request_results", "reports", "close_requests", "audit_logs",
-})
+TABLES = frozenset(
+    {
+        "users",
+        "sessions",
+        "products",
+        "images",
+        "reviews",
+        "reservations",
+        "request_results",
+        "reports",
+        "close_requests",
+        "audit_logs",
+    }
+)
 
 
 class Repository:
@@ -76,5 +86,6 @@ class Repository:
         """Find the one reservation covered by the partial unique index."""
         return self.one(
             "SELECT * FROM reservations WHERE product_id=? "
-            "AND status IN ('PENDING_SELLER','SELLER_CONFIRMED')", (product_id,)
+            "AND status IN ('PENDING_SELLER','SELLER_CONFIRMED')",
+            (product_id,),
         )

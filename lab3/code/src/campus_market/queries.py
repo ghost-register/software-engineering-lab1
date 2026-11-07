@@ -26,8 +26,12 @@ class QueryService:
         category = validation.category(filters.get("category"))
         minimum = validation.money(filters.get("minimum"), optional=True)
         maximum = validation.money(filters.get("maximum"), optional=True)
-        require(minimum is None or maximum is None or minimum <= maximum,
-                "最低价不能大于最高价", 422, "VALIDATION")
+        require(
+            minimum is None or maximum is None or minimum <= maximum,
+            "最低价不能大于最高价",
+            422,
+            "VALIDATION",
+        )
         sort = filters.get("sort", "newest")
         orders = {
             "newest": "p.first_published_at DESC,p.id ASC",
@@ -46,8 +50,9 @@ class QueryService:
                 clauses.append("p.seller_id=?")
                 parameters.append(actor.id)
             elif scope == "all":
-                require(actor is not None and actor.role == "ADMIN",
-                        "需要管理员权限", 403, "FORBIDDEN")
+                require(
+                    actor is not None and actor.role == "ADMIN", "需要管理员权限", 403, "FORBIDDEN"
+                )
             else:
                 require(scope == "public", "查询范围无效", 422, "VALIDATION")
                 clauses.append("p.status='PUBLISHED'")
@@ -72,17 +77,24 @@ class QueryService:
             where = " AND ".join(clauses) or "1=1"
             total = repo.one(f"SELECT count(*) FROM products p WHERE {where}", parameters)[0]
             rows = repo.all(
-                "SELECT p.*,u.username AS seller_name FROM products p JOIN users u ON u.id=p.seller_id "
+                "SELECT p.*,u.username AS seller_name FROM products p "
+                "JOIN users u ON u.id=p.seller_id "
                 f"WHERE {where} ORDER BY {orders[sort]} LIMIT ? OFFSET ?",
                 (*parameters, size, (page - 1) * size),
             )
             for row in rows:
-                review = repo.one(
-                    "SELECT reason,decision FROM reviews WHERE product_id=? "
-                    "ORDER BY submission_version DESC LIMIT 1", (row["id"],)
-                ) if scope == "mine" else None
-                row["review_summary"] = (review["reason"][:60]
-                                         if review and review["decision"] == "REJECTED" else "")
+                review = (
+                    repo.one(
+                        "SELECT reason,decision FROM reviews WHERE product_id=? "
+                        "ORDER BY submission_version DESC LIMIT 1",
+                        (row["id"],),
+                    )
+                    if scope == "mine"
+                    else None
+                )
+                row["review_summary"] = (
+                    review["reason"][:60] if review and review["decision"] == "REJECTED" else ""
+                )
             return {"items": rows, "total": total, "page": page, "page_size": size}
 
     def recommendations(self):
@@ -96,17 +108,28 @@ class QueryService:
             actor = self._actor(repo, actor_id)
             row = dict(repo.get("products", product_id))
             related = actor and repo.one(
-                "SELECT id FROM reservations WHERE product_id=? AND buyer_id=?", (product_id, actor.id))
+                "SELECT id FROM reservations WHERE product_id=? AND buyer_id=?",
+                (product_id, actor.id),
+            )
             privileged = actor and (actor.id == row["seller_id"] or actor.role == "ADMIN")
-            require(row["status"] == "PUBLISHED" or privileged or related,
-                    "商品不可公开查看", 403, "FORBIDDEN")
+            require(
+                row["status"] == "PUBLISHED" or privileged or related,
+                "商品不可公开查看",
+                403,
+                "FORBIDDEN",
+            )
             row["images"] = repo.all(
-                "SELECT id,sort_order FROM images WHERE product_id=? ORDER BY sort_order", (product_id,))
+                "SELECT id,sort_order FROM images WHERE product_id=? ORDER BY sort_order",
+                (product_id,),
+            )
             row["seller_name"] = repo.get("users", row["seller_id"])["username"]
             row["latest_review"] = None
             if privileged:
-                review = repo.one("SELECT * FROM reviews WHERE product_id=? "
-                                  "ORDER BY submission_version DESC LIMIT 1", (product_id,))
+                review = repo.one(
+                    "SELECT * FROM reviews WHERE product_id=? "
+                    "ORDER BY submission_version DESC LIMIT 1",
+                    (product_id,),
+                )
                 row["latest_review"] = dict(review) if review else None
             return row
 
@@ -120,7 +143,9 @@ class QueryService:
             return repo.all(
                 "SELECT r.*,p.title,p.seller_id,p.status AS product_status "
                 f"FROM reservations r JOIN products p ON p.id=r.product_id WHERE {column}=? "
-                "ORDER BY r.created_at DESC,r.id", (actor.id,))
+                "ORDER BY r.created_at DESC,r.id",
+                (actor.id,),
+            )
 
     def reservation(self, actor_id, reservation_id):
         """Recheck participation even if a user obtained a valid detail URL."""
@@ -129,10 +154,19 @@ class QueryService:
             actor = repo.actor(actor_id)
             row = dict(repo.get("reservations", reservation_id))
             product = repo.get("products", row["product_id"])
-            require(actor.role == "ADMIN" or actor.id in {row["buyer_id"], product["seller_id"]},
-                    "只能查看本人交易", 403, "FORBIDDEN")
-            row.update({"title": product["title"], "seller_id": product["seller_id"],
-                        "product_status": product["status"]})
+            require(
+                actor.role == "ADMIN" or actor.id in {row["buyer_id"], product["seller_id"]},
+                "只能查看本人交易",
+                403,
+                "FORBIDDEN",
+            )
+            row.update(
+                {
+                    "title": product["title"],
+                    "seller_id": product["seller_id"],
+                    "product_status": product["status"],
+                }
+            )
             return row
 
     def request_result(self, actor_id, key):
@@ -141,11 +175,16 @@ class QueryService:
         with self.database.read() as connection:
             repo = Repository(connection)
             actor = repo.actor(actor_id)
-            row = repo.one("SELECT * FROM request_results WHERE user_id=? AND request_key=? "
-                           "AND action='RESERVE' AND expires_at>?", (actor.id, key, now()))
+            row = repo.one(
+                "SELECT * FROM request_results WHERE user_id=? AND request_key=? "
+                "AND action='RESERVE' AND expires_at>?",
+                (actor.id, key, now()),
+            )
             require(row is not None, "未找到保留期内的请求结果，请查看预约记录", 404, "NOT_FOUND")
-            return {"original": json.loads(row["response_json"]),
-                    "current": dict(repo.get("reservations", row["reservation_id"]))}
+            return {
+                "original": json.loads(row["response_json"]),
+                "current": dict(repo.get("reservations", row["reservation_id"])),
+            }
 
     def reports(self, actor_id):
         """Ordinary reporters see only their own report outcomes."""
@@ -154,21 +193,28 @@ class QueryService:
             actor = repo.actor(actor_id)
             if actor.role == "ADMIN":
                 return repo.all("SELECT * FROM reports ORDER BY created_at DESC")
-            return repo.all("SELECT * FROM reports WHERE reporter_id=? ORDER BY created_at DESC",
-                            (actor.id,))
+            return repo.all(
+                "SELECT * FROM reports WHERE reporter_id=? ORDER BY created_at DESC", (actor.id,)
+            )
 
     def admin_list(self, actor_id, kind):
         """A fixed map keeps the administrative table selector off the SQL surface."""
         queries = {
             "reviews": "SELECT * FROM reviews ORDER BY created_at DESC",
             "close_requests": "SELECT * FROM close_requests ORDER BY created_at DESC",
-            "users": "SELECT id,username,role,status,created_at FROM users ORDER BY created_at DESC",
+            "users": (
+                "SELECT id,username,role,status,created_at FROM users " "ORDER BY created_at DESC"
+            ),
         }
         require(kind in queries, "列表类型无效", 422, "VALIDATION")
         with self.database.read() as connection:
             repo = Repository(connection)
             repo.admin(actor_id)
-            return repo.all(queries[kind])
+            rows = repo.all(queries[kind])
+            if kind == "reviews":
+                for row in rows:
+                    row["snapshot"] = json.loads(row["snapshot_json"])
+            return rows
 
     def audit_logs(self, actor_id, filters):
         """Filter read-only logs by actor, UTC-converted dates, object and result."""
@@ -188,9 +234,11 @@ class QueryService:
             repo = Repository(connection)
             repo.admin(actor_id)
             total = repo.one(f"SELECT count(*) FROM audit_logs WHERE {where}", parameters)[0]
-            rows = repo.all(f"SELECT * FROM audit_logs WHERE {where} "
-                            "ORDER BY created_at DESC,id LIMIT 50 OFFSET ?",
-                            (*parameters, (page - 1) * 50))
+            rows = repo.all(
+                f"SELECT * FROM audit_logs WHERE {where} "
+                "ORDER BY created_at DESC,id LIMIT 50 OFFSET ?",
+                (*parameters, (page - 1) * 50),
+            )
             return {"items": rows, "total": total, "page": page}
 
     def statistics(self, actor_id, filters):
@@ -202,11 +250,21 @@ class QueryService:
         with self.database.read() as connection:
             repo = Repository(connection)
             repo.admin(actor_id)
-            published = repo.one("SELECT count(*) FROM products p WHERE first_published_at>=? "
-                                 f"AND first_published_at<?{category_sql}", parameters)[0]
+            published = repo.one(
+                "SELECT count(*) FROM products p WHERE first_published_at>=? "
+                f"AND first_published_at<?{category_sql}",
+                parameters,
+            )[0]
             completed = repo.one(
                 "SELECT count(*),coalesce(sum(r.price_snapshot),0) FROM reservations r "
                 "JOIN products p ON p.id=r.product_id WHERE r.status='COMPLETED' "
-                f"AND r.completed_at>=? AND r.completed_at<?{category_sql}", parameters)
-            return {"first_published": published, "completed_trades": completed[0],
-                    "amount_cents": completed[1], "start_utc": start, "end_utc": end}
+                f"AND r.completed_at>=? AND r.completed_at<?{category_sql}",
+                parameters,
+            )
+            return {
+                "first_published": published,
+                "completed_trades": completed[0],
+                "amount_cents": completed[1],
+                "start_utc": start,
+                "end_utc": end,
+            }

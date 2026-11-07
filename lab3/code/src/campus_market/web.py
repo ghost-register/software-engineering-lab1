@@ -1,6 +1,7 @@
 """Flask transport: request decoding, CSRF protection and view composition."""
 
 from pathlib import Path
+from datetime import datetime, timedelta, timezone
 import secrets
 
 from flask import Flask, g, jsonify, render_template, request, send_file
@@ -44,8 +45,10 @@ def create_app(data_dir=None, *, testing=False):
     database.initialize()
     store = ImageStore(directory / "uploads")
     services = {
-        "auth": AuthService(database), "products": ProductService(database, store),
-        "trading": TradingService(database), "governance": GovernanceService(database),
+        "auth": AuthService(database),
+        "products": ProductService(database, store),
+        "trading": TradingService(database),
+        "governance": GovernanceService(database),
         "queries": QueryService(database),
     }
     app.extensions["market"] = services
@@ -58,6 +61,7 @@ def create_app(data_dir=None, *, testing=False):
 
 def register_security(app, auth):
     """Protect browser writes and keep failures structured and safe to display."""
+
     @app.before_request
     def authenticate_request():
         g.identity = auth.authenticate(request.cookies.get("market_session"))
@@ -65,8 +69,12 @@ def register_security(app, auth):
         g.csrf = g.identity["csrf_token"] if g.identity else g.guest_csrf
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
             provided = request.headers.get("X-CSRF-Token", "")
-            require(bool(provided) and secrets.compare_digest(provided, g.csrf),
-                    "页面校验已失效，请刷新后重试", 403, "CSRF")
+            require(
+                bool(provided) and secrets.compare_digest(provided, g.csrf),
+                "页面校验已失效，请刷新后重试",
+                403,
+                "CSRF",
+            )
 
     @app.after_request
     def secure_response(response):
@@ -74,7 +82,8 @@ def register_security(app, auth):
         response.headers["Referrer-Policy"] = "same-origin"
         response.headers["Content-Security-Policy"] = (
             "default-src 'self'; img-src 'self'; script-src 'self'; style-src 'self'; "
-            "object-src 'none'; base-uri 'self'; frame-ancestors 'none'")
+            "object-src 'none'; base-uri 'self'; frame-ancestors 'none'"
+        )
         response.headers["Cache-Control"] = "no-store"
         if not request.cookies.get("guest_csrf"):
             response.set_cookie("guest_csrf", g.guest_csrf, httponly=True, samesite="Lax")
@@ -82,6 +91,10 @@ def register_security(app, auth):
 
     @app.errorhandler(DomainError)
     def business_error(error):
+        if error.code in {"UNAUTHENTICATED", "FORBIDDEN", "CSRF"}:
+            identity = getattr(g, "identity", None)
+            user_id = identity["user"]["id"] if identity else None
+            auth.failure(user_id, "HTTP_POLICY_FAILURE", None, error.message)
         if request.path.startswith("/api/"):
             return jsonify(error={"code": error.code, "message": error.message}), error.status
         return render_template("error.html", message=error.message), error.status
@@ -101,14 +114,45 @@ def register_security(app, auth):
     def yuan(value):
         return "—" if value is None else f"¥{value // 100}.{value % 100:02}"
 
+    @app.template_filter("state_label")
+    def state_label(value):
+        labels = {
+            "DRAFT": "草稿",
+            "PENDING_REVIEW": "待审核",
+            "PUBLISHED": "已发布",
+            "RESERVED": "已预约",
+            "CONFIRMED": "已确认",
+            "COMPLETED": "已完成",
+            "OFFLINE": "已下架",
+            "PENDING_SELLER": "待卖家确认",
+            "SELLER_CONFIRMED": "卖家已确认",
+            "CANCELLED": "已取消",
+            "REJECTED": "已拒绝",
+            "CLOSED": "已关闭",
+            "PENDING": "待处理",
+            "APPROVED": "已批准",
+            "RESOLVED": "已处理",
+            "ACTIVE": "正常",
+            "DISABLED": "已停用",
+            "USER": "普通账号",
+            "ADMIN": "管理员",
+        }
+        return labels.get(value, value)
+
+    @app.template_filter("local_time")
+    def local_time(value):
+        if not value:
+            return "—"
+        instant = datetime.fromisoformat(value)
+        return instant.astimezone(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
+
 
 def register_api(app, services, store):
     """Transport handlers delegate business decisions to the application layer."""
     auth = services["auth"]
-    products = services["products"]
-    trading = services["trading"]
-    governance = services["governance"]
-    queries = services["queries"]
+    register_product_api(app, services, store)
+    register_trade_api(app, services)
+    register_governance_api(app, services)
 
     @app.get("/api/session")
     def session_info():
@@ -122,8 +166,9 @@ def register_api(app, services, store):
     def login():
         result = auth.login(body())
         response = jsonify(user=result["user"], csrf_token=result["csrf_token"])
-        response.set_cookie("market_session", result["token"], httponly=True,
-                            samesite="Lax", max_age=8 * 3600)
+        response.set_cookie(
+            "market_session", result["token"], httponly=True, samesite="Lax", max_age=8 * 3600
+        )
         return response
 
     @app.delete("/api/auth/session")
@@ -133,6 +178,12 @@ def register_api(app, services, store):
         response = jsonify(logged_out=True)
         response.delete_cookie("market_session")
         return response
+
+
+def register_product_api(app, services, store):
+    """Product read, draft, image and publication endpoints."""
+    products = services["products"]
+    queries = services["queries"]
 
     @app.get("/api/products")
     def search():
@@ -184,6 +235,12 @@ def register_api(app, services, store):
         queries.product(current_id(), image["product_id"])
         return send_file(store.path(image["storage_key"]), mimetype=image["content_type"])
 
+
+def register_trade_api(app, services):
+    """Reservation commands and recoverable request results."""
+    trading = services["trading"]
+    queries = services["queries"]
+
     @app.post("/api/products/<identifier>/reservations")
     def reserve(identifier):
         return jsonify(trading.reserve(actor_id(), identifier, body().get("request_key"))), 201
@@ -206,8 +263,11 @@ def register_api(app, services, store):
 
     @app.post("/api/reservations/<identifier>/reject")
     def reject(identifier):
-        return jsonify(trading.cancel_or_reject(actor_id(), identifier, reject=True,
-                                               reason=body().get("reason")))
+        return jsonify(
+            trading.cancel_or_reject(
+                actor_id(), identifier, reject=True, reason=body().get("reason")
+            )
+        )
 
     @app.post("/api/reservations/<identifier>/confirm")
     def confirm(identifier):
@@ -220,6 +280,14 @@ def register_api(app, services, store):
     @app.post("/api/reservations/<identifier>/close-requests")
     def close_request(identifier):
         return jsonify(trading.request_close(actor_id(), identifier, body().get("reason"))), 201
+
+
+def register_governance_api(app, services):
+    """Administrative decisions and reporter-facing outcomes."""
+    governance = services["governance"]
+    queries = services["queries"]
+    products = services["products"]
+    auth = services["auth"]
 
     @app.post("/api/products/<identifier>/reports")
     def report(identifier):
@@ -236,8 +304,9 @@ def register_api(app, services, store):
     @app.post("/api/admin/reviews/<identifier>/decision")
     def review(identifier):
         data = body()
-        return jsonify(products.review(actor_id(), identifier, data.get("decision"),
-                                       data.get("reason", "")))
+        return jsonify(
+            products.review(actor_id(), identifier, data.get("decision"), data.get("reason", ""))
+        )
 
     @app.post("/api/admin/products/<identifier>/moderate")
     def moderate(identifier):
@@ -250,8 +319,11 @@ def register_api(app, services, store):
     @app.post("/api/admin/close-requests/<identifier>/decision")
     def decide_close(identifier):
         data = body()
-        return jsonify(governance.decide_close(actor_id(), identifier, data.get("approved"),
-                                               data.get("result")))
+        return jsonify(
+            governance.decide_close(
+                actor_id(), identifier, data.get("approved"), data.get("result")
+            )
+        )
 
     @app.post("/api/admin/users/<identifier>/disable")
     def disable_account(identifier):
@@ -300,27 +372,40 @@ def register_views(app, services):
     @app.get("/selling")
     def selling():
         actor_id()
-        return render_template("selling.html", results=queries.products(current_id(), {
-            **request.args, "scope": "mine", "page_size": "100"}))
+        return render_template(
+            "selling.html",
+            results=queries.products(
+                current_id(), {**request.args, "scope": "mine", "page_size": "100"}
+            ),
+        )
 
     @app.get("/reservations")
     def reservation_list():
-        return render_template("reservations.html", items=queries.reservations(
-            actor_id(), request.args.get("side", "buyer")), detail=None)
+        return render_template(
+            "reservations.html",
+            items=queries.reservations(actor_id(), request.args.get("side", "buyer")),
+            detail=None,
+        )
 
     @app.get("/reservations/<identifier>")
     def reservation_page(identifier):
-        return render_template("reservations.html", detail=queries.reservation(actor_id(), identifier),
-                               items=[])
+        return render_template(
+            "reservations.html", detail=queries.reservation(actor_id(), identifier), items=[]
+        )
 
     @app.get("/reports")
     def own_reports():
-        return render_template("records.html", title="我的举报记录", items=queries.reports(actor_id()))
+        return render_template(
+            "records.html", title="我的举报记录", items=queries.reports(actor_id())
+        )
 
     @app.get("/admin")
     def admin_page():
         user_id = actor_id()
-        return render_template("admin.html", users=queries.admin_list(user_id, "users"),
-                               reviews=queries.admin_list(user_id, "reviews"),
-                               reports=queries.reports(user_id),
-                               close_requests=queries.admin_list(user_id, "close_requests"))
+        return render_template(
+            "admin.html",
+            users=queries.admin_list(user_id, "users"),
+            reviews=queries.admin_list(user_id, "reviews"),
+            reports=queries.reports(user_id),
+            close_requests=queries.admin_list(user_id, "close_requests"),
+        )

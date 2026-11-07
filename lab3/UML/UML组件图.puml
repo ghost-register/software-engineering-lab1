@@ -1,0 +1,39 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
+skinparam shadowing false
+title 实验三 Flask单体分层实现
+actor 普通用户 as User
+actor 管理员 as Admin
+component "电脑浏览器\nJinja模板与app.js" as Browser
+package "同一Waitress应用进程" {
+ component "web.py\n身份会话与CSRF、HTTP路由" as Web
+ component "AuthService\n账号权限" as Auth
+ component "ProductService\n商品与审核" as Product
+ component "TradingService\n预约交易" as Trade
+ component "GovernanceService\n举报与异常处置" as Gov
+ component "QueryService\n检索、日志与统计" as Query
+ component "Service.perform\n事务与成功/失败日志" as Unit
+ component "Repository / Database" as Repo
+ component "ImageStore" as Images
+}
+database "SQLite\nWAL、BEGIN IMMEDIATE\n有效预约部分唯一索引" as DB
+folder "本地uploads\n随机图片键" as Files
+User --> Browser
+Admin --> Browser
+Browser --> Web : 本机HTTP
+Web --> Auth
+Web --> Product
+Web --> Trade
+Web --> Gov
+Web --> Query
+Auth --> Unit
+Product --> Unit
+Trade --> Unit
+Gov --> Unit
+Query --> Repo
+Unit --> Repo
+Repo --> DB
+Product --> Images
+Images --> Files
+@enduml

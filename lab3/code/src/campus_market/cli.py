@@ -9,6 +9,7 @@ import sys
 from waitress import serve
 
 from .domain import DomainError
+from .maintenance import MaintenanceService
 from .seed import seed_demo
 from .web import create_app
 
@@ -28,6 +29,10 @@ def parser():
     backup = tasks.add_parser("backup", help="在线备份数据库")
     backup.add_argument("destination")
     tasks.add_parser("check-db", help="只读数据库完整性检查")
+    tasks.add_parser("check-state", help="检查商品预约状态、外键和请求归属")
+    cleanup = tasks.add_parser("retention", help="预览过期记录清理，默认不写入")
+    cleanup.add_argument("--keep-days", type=int, default=180)
+    cleanup.add_argument("--apply", action="store_true")
     return result
 
 
@@ -50,13 +55,24 @@ def main(argv=None):
             confirmation = getpass.getpass("再次输入密码：")
             if secret != confirmation:
                 raise ValueError("两次密码不一致")
-            print(json.dumps(services["auth"].create_admin(options.username, secret), ensure_ascii=False))
+            print(
+                json.dumps(
+                    services["auth"].create_admin(options.username, secret), ensure_ascii=False
+                )
+            )
         elif options.command == "backup":
             print(database.backup(Path(options.destination)))
         elif options.command == "check-db":
             results = database.integrity()
             print(json.dumps(results))
             return 0 if results == ["ok"] else 1
+        elif options.command == "check-state":
+            result = MaintenanceService(database).consistency()
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+            return 0 if result["ok"] else 1
+        elif options.command == "retention":
+            result = MaintenanceService(database).retention(options.keep_days, apply=options.apply)
+            print(json.dumps(result, ensure_ascii=False, indent=2))
     except (DomainError, ValueError) as exc:
         print(str(exc), file=sys.stderr)
         return 1

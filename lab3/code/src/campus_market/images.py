@@ -31,8 +31,13 @@ class ImageStore:
                     if kind not in {"PNG", "JPEG"}:
                         raise DomainError("只支持真实JPEG或PNG图片")
                     image.verify()
-        except (UnidentifiedImageError, OSError, ValueError,
-                Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+        except (
+            UnidentifiedImageError,
+            OSError,
+            ValueError,
+            Image.DecompressionBombError,
+            Image.DecompressionBombWarning,
+        ) as exc:
             raise DomainError("图片损坏或尺寸异常") from exc
         return ("image/png", ".png") if kind == "PNG" else ("image/jpeg", ".jpg")
 

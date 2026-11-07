@@ -1,6 +1,6 @@
 """Short-lived SQLite connections and explicit write transactions."""
 
-from contextlib import contextmanager
+from contextlib import closing, contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
 import sqlite3
@@ -68,7 +68,7 @@ class Database:
         if target == self.path:
             raise ValueError("备份路径不能与数据库路径相同")
         target.parent.mkdir(parents=True, exist_ok=True)
-        with self.read() as source, sqlite3.connect(target) as destination_db:
+        with self.read() as source, closing(sqlite3.connect(target)) as destination_db:
             source.backup(destination_db)
         return str(target)
 

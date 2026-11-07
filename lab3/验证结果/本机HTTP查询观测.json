@@ -1,0 +1,820 @@
+{
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "logical_cpus": 32,
+    "python": "3.12.14",
+    "transport": "HTTP loopback"
+  },
+  "products": 10000,
+  "concurrent_clients": 20,
+  "warmup": 20,
+  "measured": 100,
+  "within_one_second": 100,
+  "failed": 0,
+  "median_seconds": 0.047768500000000005,
+  "p95_seconds": 0.102718,
+  "max_seconds": 0.108462,
+  "samples": [
+    {
+      "index": 0,
+      "condition": 0,
+      "seconds": 0.013284,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 1,
+      "condition": 1,
+      "seconds": 0.07298,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 2,
+      "condition": 2,
+      "seconds": 0.020081,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 3,
+      "condition": 0,
+      "seconds": 0.022445,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 4,
+      "condition": 1,
+      "seconds": 0.075311,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 5,
+      "condition": 2,
+      "seconds": 0.016282,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 6,
+      "condition": 0,
+      "seconds": 0.033713,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 7,
+      "condition": 1,
+      "seconds": 0.085048,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 8,
+      "condition": 2,
+      "seconds": 0.027394,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 9,
+      "condition": 0,
+      "seconds": 0.039726,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 10,
+      "condition": 1,
+      "seconds": 0.108462,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 11,
+      "condition": 2,
+      "seconds": 0.03236,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 12,
+      "condition": 0,
+      "seconds": 0.050225,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 13,
+      "condition": 1,
+      "seconds": 0.102718,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 14,
+      "condition": 2,
+      "seconds": 0.037287,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 15,
+      "condition": 0,
+      "seconds": 0.049488,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 16,
+      "condition": 1,
+      "seconds": 0.107455,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 17,
+      "condition": 2,
+      "seconds": 0.040171,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 18,
+      "condition": 0,
+      "seconds": 0.052115,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 19,
+      "condition": 1,
+      "seconds": 0.103859,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 20,
+      "condition": 2,
+      "seconds": 0.040799,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 21,
+      "condition": 0,
+      "seconds": 0.048201,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 22,
+      "condition": 1,
+      "seconds": 0.088094,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 23,
+      "condition": 2,
+      "seconds": 0.03012,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 24,
+      "condition": 0,
+      "seconds": 0.032145,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 25,
+      "condition": 1,
+      "seconds": 0.105745,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 26,
+      "condition": 2,
+      "seconds": 0.010057,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 27,
+      "condition": 0,
+      "seconds": 0.030774,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 28,
+      "condition": 1,
+      "seconds": 0.082136,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 29,
+      "condition": 2,
+      "seconds": 0.020851,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 30,
+      "condition": 0,
+      "seconds": 0.036135,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 31,
+      "condition": 1,
+      "seconds": 0.102971,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 32,
+      "condition": 2,
+      "seconds": 0.023785,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 33,
+      "condition": 0,
+      "seconds": 0.030599,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 34,
+      "condition": 1,
+      "seconds": 0.097485,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 35,
+      "condition": 2,
+      "seconds": 0.025229,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 36,
+      "condition": 0,
+      "seconds": 0.038664,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 37,
+      "condition": 1,
+      "seconds": 0.091484,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 38,
+      "condition": 2,
+      "seconds": 0.018334,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 39,
+      "condition": 0,
+      "seconds": 0.032089,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 40,
+      "condition": 1,
+      "seconds": 0.084559,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 41,
+      "condition": 2,
+      "seconds": 0.025538,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 42,
+      "condition": 0,
+      "seconds": 0.035397,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 43,
+      "condition": 1,
+      "seconds": 0.095693,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 44,
+      "condition": 2,
+      "seconds": 0.043329,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 45,
+      "condition": 0,
+      "seconds": 0.049352,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 46,
+      "condition": 1,
+      "seconds": 0.089059,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 47,
+      "condition": 2,
+      "seconds": 0.039314,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 48,
+      "condition": 0,
+      "seconds": 0.047197,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 49,
+      "condition": 1,
+      "seconds": 0.088903,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 50,
+      "condition": 2,
+      "seconds": 0.029272,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 51,
+      "condition": 0,
+      "seconds": 0.066098,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 52,
+      "condition": 1,
+      "seconds": 0.091086,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 53,
+      "condition": 2,
+      "seconds": 0.034715,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 54,
+      "condition": 0,
+      "seconds": 0.047336,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 55,
+      "condition": 1,
+      "seconds": 0.076717,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 56,
+      "condition": 2,
+      "seconds": 0.036067,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 57,
+      "condition": 0,
+      "seconds": 0.056375,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 58,
+      "condition": 1,
+      "seconds": 0.072203,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 59,
+      "condition": 2,
+      "seconds": 0.039064,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 60,
+      "condition": 0,
+      "seconds": 0.050669,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 61,
+      "condition": 1,
+      "seconds": 0.073335,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 62,
+      "condition": 2,
+      "seconds": 0.047082,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 63,
+      "condition": 0,
+      "seconds": 0.042216,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 64,
+      "condition": 1,
+      "seconds": 0.06995,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 65,
+      "condition": 2,
+      "seconds": 0.048294,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 66,
+      "condition": 0,
+      "seconds": 0.057258,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 67,
+      "condition": 1,
+      "seconds": 0.069515,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 68,
+      "condition": 2,
+      "seconds": 0.048397,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 69,
+      "condition": 0,
+      "seconds": 0.056344,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 70,
+      "condition": 1,
+      "seconds": 0.06374,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 71,
+      "condition": 2,
+      "seconds": 0.049996,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 72,
+      "condition": 0,
+      "seconds": 0.055368,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 73,
+      "condition": 1,
+      "seconds": 0.069349,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 74,
+      "condition": 2,
+      "seconds": 0.043997,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 75,
+      "condition": 0,
+      "seconds": 0.055614,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 76,
+      "condition": 1,
+      "seconds": 0.07152,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 77,
+      "condition": 2,
+      "seconds": 0.051371,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 78,
+      "condition": 0,
+      "seconds": 0.05428,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 79,
+      "condition": 1,
+      "seconds": 0.067757,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 80,
+      "condition": 2,
+      "seconds": 0.043262,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 81,
+      "condition": 0,
+      "seconds": 0.052963,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 82,
+      "condition": 1,
+      "seconds": 0.063981,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 83,
+      "condition": 2,
+      "seconds": 0.048258,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 84,
+      "condition": 0,
+      "seconds": 0.044979,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 85,
+      "condition": 1,
+      "seconds": 0.060246,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 86,
+      "condition": 2,
+      "seconds": 0.043461,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 87,
+      "condition": 0,
+      "seconds": 0.042339,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 88,
+      "condition": 1,
+      "seconds": 0.055168,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 89,
+      "condition": 2,
+      "seconds": 0.041358,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 90,
+      "condition": 0,
+      "seconds": 0.041629,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 91,
+      "condition": 1,
+      "seconds": 0.051795,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 92,
+      "condition": 2,
+      "seconds": 0.035976,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 93,
+      "condition": 0,
+      "seconds": 0.0374,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 94,
+      "condition": 1,
+      "seconds": 0.043264,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 95,
+      "condition": 2,
+      "seconds": 0.031199,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 96,
+      "condition": 0,
+      "seconds": 0.034002,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 97,
+      "condition": 1,
+      "seconds": 0.033608,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 98,
+      "condition": 2,
+      "seconds": 0.029617,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    },
+    {
+      "index": 99,
+      "condition": 0,
+      "seconds": 0.028891,
+      "status": 200,
+      "error": null,
+      "within_one_second": true
+    }
+  ],
+  "scope": "本机回环HTTP观测，未限制为4核8GB，也未在同局域网独立客户端验收"
+}

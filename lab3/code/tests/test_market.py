@@ -1,6 +1,7 @@
 """Behavioral tests for permission, lifecycle, repeat requests and rollback."""
 
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import closing
 from io import BytesIO
 import json
 from pathlib import Path
@@ -12,6 +13,7 @@ from PIL import Image
 
 from campus_market import validation
 from campus_market.domain import DomainError
+from campus_market.maintenance import MaintenanceService
 from campus_market.repository import Repository
 from campus_market.web import create_app
 
@@ -45,19 +47,30 @@ class MarketCase(unittest.TestCase):
         return output.getvalue()
 
     def published(self, price="12.34", title="测试机械键盘"):
-        product = self.products.create(self.seller["id"], {
-            "title": title, "description": "正常使用，校内线下交付。", "category": "数码电子",
-            "condition": "9成新", "price": price,
-        })
+        product = self.products.create(
+            self.seller["id"],
+            {
+                "title": title,
+                "description": "正常使用，校内线下交付。",
+                "category": "数码电子",
+                "condition": "9成新",
+                "price": price,
+            },
+        )
         self.products.upload(self.seller["id"], product["id"], self.image_bytes())
         product = self.queries.product(self.seller["id"], product["id"])
         self.products.submit(self.seller["id"], product["id"], product["version"])
-        review = next(row for row in self.queries.admin_list(self.admin["id"], "reviews")
-                      if row["product_id"] == product["id"])
+        review = next(
+            row
+            for row in self.queries.admin_list(self.admin["id"], "reviews")
+            if row["product_id"] == product["id"]
+        )
         return self.products.review(self.admin["id"], review["id"], "APPROVED")
 
     def reservation(self, product):
-        return self.trading.reserve(self.buyer["id"], product["id"], "request-key-0001")["reservation"]
+        return self.trading.reserve(self.buyer["id"], product["id"], "request-" + product["id"])[
+            "reservation"
+        ]
 
     def rows(self, table):
         with self.db.read() as connection:
@@ -65,7 +78,9 @@ class MarketCase(unittest.TestCase):
 
     def test_registration_role_and_case_insensitive_uniqueness(self):
         with self.assertRaises(DomainError):
-            self.auth.register({"username": "hack_user", "password": "Testing2026", "role": "ADMIN"})
+            self.auth.register(
+                {"username": "hack_user", "password": "Testing2026", "role": "ADMIN"}
+            )
         with self.assertRaises(DomainError):
             self.account("SELLER_TEST")
         self.assertTrue(all("password_hash" not in user for user in [self.seller, self.buyer]))
@@ -121,10 +136,18 @@ class MarketCase(unittest.TestCase):
 
     def test_rejected_review_retains_reason_and_resubmits(self):
         product = self.published()
-        edited = self.products.edit(self.seller["id"], product["id"], {
-            "title": "重新拍照的键盘", "description": "完整说明", "category": "数码电子",
-            "condition": "8成新", "price": "12.34", "version": product["version"],
-        })
+        edited = self.products.edit(
+            self.seller["id"],
+            product["id"],
+            {
+                "title": "重新拍照的键盘",
+                "description": "完整说明",
+                "category": "数码电子",
+                "condition": "8成新",
+                "price": "12.34",
+                "version": product["version"],
+            },
+        )
         self.assertEqual(edited["status"], "PENDING_REVIEW")
         review = self.queries.admin_list(self.admin["id"], "reviews")[0]
         with self.assertRaises(DomainError):
@@ -148,8 +171,10 @@ class MarketCase(unittest.TestCase):
     def test_query_combination_visibility_and_recommendation_separation(self):
         product = self.published()
         self.products.create(self.seller["id"], {"title": "隐藏草稿"})
-        result = self.queries.products(None, {"keyword": "键盘", "category": "数码电子",
-                                             "minimum": "12.34", "maximum": "12.34"})
+        result = self.queries.products(
+            None,
+            {"keyword": "键盘", "category": "数码电子", "minimum": "12.34", "maximum": "12.34"},
+        )
         self.assertEqual([row["id"] for row in result["items"]], [product["id"]])
         empty = self.queries.products(None, {"keyword": "绝不匹配", "maximum": "1"})
         self.assertEqual(empty["total"], 0)
@@ -192,9 +217,13 @@ class MarketCase(unittest.TestCase):
             self.trading.complete(self.seller["id"], reservation["id"])
         self.trading.complete(self.buyer["id"], reservation["id"])
         self.trading.complete(self.buyer["id"], reservation["id"])
-        stats = self.queries.statistics(self.admin["id"], {"start": "2020-01-01", "end": "2100-01-01"})
-        self.assertEqual((stats["first_published"], stats["completed_trades"], stats["amount_cents"]),
-                         (1, 1, 1234))
+        stats = self.queries.statistics(
+            self.admin["id"], {"start": "2020-01-01", "end": "2100-01-01"}
+        )
+        self.assertEqual(
+            (stats["first_published"], stats["completed_trades"], stats["amount_cents"]),
+            (1, 1, 1234),
+        )
         self.governance.moderate(self.admin["id"], product["id"], "成交后追加违规记录")
         self.assertEqual(self.rows("products")[0]["status"], "COMPLETED")
         self.assertEqual(self.rows("reservations")[0]["status"], "COMPLETED")
@@ -235,30 +264,41 @@ class MarketCase(unittest.TestCase):
         buyers = [self.account(f"concurrent_{index:02}") for index in range(20)]
         for round_number in range(10):
             product = self.published(title=f"竞争商品{round_number}")
+
             def attempt(buyer):
                 try:
-                    self.trading.reserve(buyer["id"], product["id"], f"round-{round_number:02}-request")
+                    self.trading.reserve(
+                        buyer["id"], product["id"], f"round-{round_number:02}-request"
+                    )
                     return True
                 except DomainError:
                     return False
+
             with ThreadPoolExecutor(max_workers=20) as pool:
                 winners = list(pool.map(attempt, buyers))
             self.assertEqual(sum(winners), 1)
             with self.db.read() as connection:
-                count = connection.execute("SELECT count(*) FROM reservations WHERE product_id=? "
-                                           "AND status='PENDING_SELLER'", (product["id"],)).fetchone()[0]
+                count = connection.execute(
+                    "SELECT count(*) FROM reservations WHERE product_id=? "
+                    "AND status='PENDING_SELLER'",
+                    (product["id"],),
+                ).fetchone()[0]
             self.assertEqual(count, 1)
 
     def test_cancel_confirm_race_has_one_legal_result(self):
         product = self.published()
         reservation = self.reservation(product)
+
         def attempt(action):
             try:
                 if action == "cancel":
-                    return self.trading.cancel_or_reject(self.buyer["id"], reservation["id"])["status"]
+                    return self.trading.cancel_or_reject(self.buyer["id"], reservation["id"])[
+                        "status"
+                    ]
                 return self.trading.confirm(self.seller["id"], reservation["id"])["status"]
             except DomainError:
                 return "CONFLICT"
+
         with ThreadPoolExecutor(max_workers=2) as pool:
             results = list(pool.map(attempt, ["cancel", "confirm"]))
         self.assertIn("CONFLICT", results)
@@ -275,9 +315,11 @@ class MarketCase(unittest.TestCase):
                     self.trading.confirm(self.seller["id"], reservation["id"])
                 before = self.queries.product(self.seller["id"], product["id"])["status"]
                 service = self.governance if action == "MODERATE" else self.trading
+
                 def fail(current_action, point):
                     if current_action == action and point == "after_product":
                         raise RuntimeError("injected failure")
+
                 service.fault_hook = fail
                 try:
                     with self.assertRaises(RuntimeError):
@@ -293,15 +335,24 @@ class MarketCase(unittest.TestCase):
                             service.moderate(self.admin["id"], product["id"], "故障测试")
                 finally:
                     service.fault_hook = None
-                self.assertEqual(self.queries.product(self.seller["id"], product["id"])["status"], before)
+                self.assertEqual(
+                    self.queries.product(self.seller["id"], product["id"])["status"], before
+                )
                 if reservation:
                     current = self.queries.reservation(self.buyer["id"], reservation["id"])
-                    self.assertEqual(current["status"], "SELLER_CONFIRMED" if action == "COMPLETE"
-                                     else "PENDING_SELLER")
+                    self.assertEqual(
+                        current["status"],
+                        "SELLER_CONFIRMED" if action == "COMPLETE" else "PENDING_SELLER",
+                    )
                 else:
                     with self.db.read() as connection:
-                        self.assertEqual(connection.execute("SELECT count(*) FROM reservations "
-                                                            "WHERE product_id=?", (product["id"],)).fetchone()[0], 0)
+                        self.assertEqual(
+                            connection.execute(
+                                "SELECT count(*) FROM reservations " "WHERE product_id=?",
+                                (product["id"],),
+                            ).fetchone()[0],
+                            0,
+                        )
         failures = [row for row in self.rows("audit_logs") if row["result"] == "FAILURE"]
         self.assertEqual(len(failures), 10)
 
@@ -311,12 +362,15 @@ class MarketCase(unittest.TestCase):
         product = self.published()
         reservation = self.reservation(product)
         with self.assertRaises(sqlite3.IntegrityError), self.db.transaction() as connection:
-            connection.execute("INSERT INTO reservations SELECT 'duplicate',product_id,buyer_id,"
-                               "price_snapshot,status,reason,created_at,confirmed_at,completed_at "
-                               "FROM reservations WHERE id=?", (reservation["id"],))
+            connection.execute(
+                "INSERT INTO reservations SELECT 'duplicate',product_id,buyer_id,"
+                "price_snapshot,status,reason,created_at,confirmed_at,completed_at "
+                "FROM reservations WHERE id=?",
+                (reservation["id"],),
+            )
         target = Path(self.temporary.name) / "backup.sqlite3"
         self.db.backup(target)
-        with sqlite3.connect(target) as connection:
+        with closing(sqlite3.connect(target)) as connection:
             self.assertEqual(connection.execute("PRAGMA integrity_check").fetchone()[0], "ok")
 
     def test_audits_never_contain_password_or_active_session_token(self):
@@ -327,6 +381,58 @@ class MarketCase(unittest.TestCase):
         self.assertNotIn("Testing2026", logs)
         self.assertNotIn("Wrong2026", logs)
         self.assertNotIn(logged["token"], logs)
+
+    def test_http_csrf_permissions_and_real_pages(self):
+        product = self.published()
+        reservation = self.reservation(product)
+        client = self.app.test_client()
+        session = client.get("/api/session").get_json()
+        headers = {"X-CSRF-Token": session["csrf_token"]}
+        self.assertEqual(client.post("/api/products", json={}).status_code, 403)
+        self.assertEqual(client.post("/api/products", json={}, headers=headers).status_code, 401)
+        response = client.post(
+            "/api/auth/login",
+            json={"username": "other_test", "password": "Testing2026"},
+            headers=headers,
+        )
+        self.assertEqual(response.status_code, 200)
+        headers = {"X-CSRF-Token": response.get_json()["csrf_token"]}
+        denials = [
+            ("POST", f"/api/reservations/{reservation['id']}/confirm", {}),
+            ("POST", f"/api/reservations/{reservation['id']}/complete", {}),
+            ("POST", f"/api/reservations/{reservation['id']}/cancel", {}),
+            ("PATCH", f"/api/products/{product['id']}", {"version": product["version"]}),
+            ("DELETE", f"/api/products/{product['id']}", {"version": product["version"]}),
+            ("POST", f"/api/products/{product['id']}/offline", {"version": product["version"]}),
+            ("POST", f"/api/admin/products/{product['id']}/moderate", {"reason": "越权"}),
+            ("POST", f"/api/admin/users/{self.seller['id']}/disable", {"reason": "越权"}),
+            ("GET", "/api/admin/logs", None),
+            ("GET", "/api/admin/lists/users", None),
+            ("GET", f"/api/reservations/{reservation['id']}", None),
+        ]
+        for method, url, payload in denials:
+            with self.subTest(url=url):
+                response = client.open(url, method=method, json=payload, headers=headers)
+                self.assertEqual(response.status_code, 403)
+        self.assertEqual(self.rows("reservations")[0]["status"], "PENDING_SELLER")
+        for path in ["/", "/selling", "/reservations", "/auth/login", "/auth/register", "/reports"]:
+            self.assertEqual(client.get(path).status_code, 200, path)
+        response = client.get("/?keyword=绝不匹配")
+        self.assertIn("其他已发布商品".encode(), response.data)
+        self.assertEqual(client.delete("/api/auth/session", headers=headers).status_code, 200)
+        self.assertEqual(client.get("/api/session").get_json()["user"], None)
+
+    def test_consistency_and_minimum_log_retention(self):
+        product = self.published()
+        self.reservation(product)
+        maintenance = MaintenanceService(self.db)
+        self.assertTrue(maintenance.consistency()["ok"])
+        before = len(self.rows("audit_logs"))
+        preview = maintenance.retention(180)
+        self.assertFalse(preview["applied"])
+        self.assertEqual(len(self.rows("audit_logs")), before)
+        with self.assertRaises(DomainError):
+            maintenance.retention(179, apply=True)
 
 
 if __name__ == "__main__":

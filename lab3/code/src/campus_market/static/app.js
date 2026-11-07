@@ -24,6 +24,35 @@ function values(form) {
   for (const field of form.querySelectorAll("[data-boolean]")) result[field.name] = field.value === "true";
   return result;
 }
+function displayQuery(panel, result) {
+  panel.replaceChildren();
+  if ("amount_cents" in result) {
+    const titles = [["首次发布商品", result.first_published], ["完成交易", result.completed_trades],
+      ["成交金额", new Intl.NumberFormat("zh-CN", {style:"currency",currency:"CNY"}).format(result.amount_cents/100)]];
+    const grid = document.createElement("div"); grid.className = "grid";
+    for (const [title, value] of titles) {
+      const card = document.createElement("section"); card.className = "card";
+      const heading = document.createElement("h3"); heading.textContent = title;
+      const number = document.createElement("strong"); number.className = "price"; number.textContent = value;
+      card.append(heading, number); grid.append(card);
+    }
+    panel.append(grid); return;
+  }
+  const summary = document.createElement("p"); summary.textContent = `共 ${result.total} 条记录，当前第 ${result.page} 页`;
+  panel.append(summary);
+  const table = document.createElement("table");
+  const columns = [["created_at","时间"],["actor_id","操作人编号"],["action","动作"],
+    ["object_id","对象编号"],["before_state","原状态"],["after_state","新状态"],
+    ["result","结果"],["reason","原因"]];
+  const header = table.createTHead().insertRow();
+  for (const [,title] of columns) { const cell = document.createElement("th"); cell.textContent=title; header.append(cell); }
+  const rows = table.createTBody();
+  for (const record of result.items) {
+    const row = rows.insertRow();
+    for (const [key] of columns) row.insertCell().textContent = record[key] ?? "—";
+  }
+  panel.classList.add("table-scroll"); panel.append(table);
+}
 async function confirmAction(message, safeLabel) {
   const dialog = document.querySelector("#confirmation");
   const keep = document.querySelector("#keep-action");
@@ -55,7 +84,7 @@ for (const form of document.querySelectorAll("form[data-api],form[data-upload],f
         const parameters = new URLSearchParams(values(form));
         for (const [key, value] of [...parameters]) if (!value) parameters.delete(key);
         const result = await api(form.dataset.query + "?" + parameters, "GET");
-        form.querySelector(".query-result").textContent = JSON.stringify(result, null, 2);
+        displayQuery(form.querySelector(".query-result"), result);
         return;
       }
       let url = form.dataset.api || form.dataset.upload;

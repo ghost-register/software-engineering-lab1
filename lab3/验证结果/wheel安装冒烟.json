@@ -1,0 +1,6 @@
+{
+  "wheel_import_path": "campus_market\\__init__.py",
+  "market_status": 200,
+  "static_resources": "OK",
+  "sqlite_schema_initialization": "OK"
+}

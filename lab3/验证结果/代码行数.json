@@ -1,0 +1,87 @@
+{
+  "scope": "仅应用Python；排除测试、工具、HTML、CSS、JS、SQL和构建产物",
+  "physical": 2319,
+  "code": 1889,
+  "files": [
+    {
+      "file": "__init__.py",
+      "physical": 3,
+      "code": 1
+    },
+    {
+      "file": "auth.py",
+      "physical": 173,
+      "code": 148
+    },
+    {
+      "file": "cli.py",
+      "physical": 83,
+      "code": 71
+    },
+    {
+      "file": "database.py",
+      "physical": 78,
+      "code": 54
+    },
+    {
+      "file": "domain.py",
+      "physical": 111,
+      "code": 68
+    },
+    {
+      "file": "governance.py",
+      "physical": 154,
+      "code": 132
+    },
+    {
+      "file": "images.py",
+      "physical": 65,
+      "code": 48
+    },
+    {
+      "file": "maintenance.py",
+      "physical": 89,
+      "code": 78
+    },
+    {
+      "file": "products.py",
+      "physical": 280,
+      "code": 231
+    },
+    {
+      "file": "queries.py",
+      "physical": 270,
+      "code": 242
+    },
+    {
+      "file": "repository.py",
+      "physical": 91,
+      "code": 66
+    },
+    {
+      "file": "seed.py",
+      "physical": 93,
+      "code": 82
+    },
+    {
+      "file": "service.py",
+      "physical": 80,
+      "code": 63
+    },
+    {
+      "file": "trading.py",
+      "physical": 229,
+      "code": 201
+    },
+    {
+      "file": "validation.py",
+      "physical": 109,
+      "code": 79
+    },
+    {
+      "file": "web.py",
+      "physical": 411,
+      "code": 325
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 16
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+title 实验三 实际类与持久化边界
+class User {
+ id: str
+ username: str
+ role: str
+ status: str
+ from_row(row)
+ to_dict()
+}
+class Product {
+ id: str
+ seller_id: str
+ status: str
+ version: int
+ price_cents: int
+ from_row(row)
+}
+class Reservation {
+ id: str
+ product_id: str
+ buyer_id: str
+ price_snapshot: int
+ status: str
+ from_row(row)
+}
+class AuthService {
+ register(data)
+ login(data)
+ disable(actor, user, reason)
+}
+class ProductService {
+ create(actor, data)
+ submit(actor, product, version)
+ review(actor, review, decision)
+}
+class TradingService {
+ reserve(actor, product, key)
+ cancel_or_reject(...)
+ confirm(...)
+ complete(...)
+}
+class GovernanceService {
+ report(...)
+ moderate(...)
+ decide_close(...)
+}
+class QueryService {
+ products(actor, filters)
+ statistics(actor, filters)
+}
+class Repository {
+ actor(id)
+ admin(id)
+ get(table, id)
+ active_reservation(product)
+}
+class Database {
+ connect()
+ transaction()
+ backup(destination)
+}
+User "1" -- "0..*" Product : 卖家
+User "1" -- "0..*" Reservation : 买家
+Product "1" -- "0..*" Reservation : 历史预约
+AuthService ..> User
+ProductService ..> Product
+TradingService ..> Reservation
+AuthService ..> Repository
+ProductService ..> Repository
+TradingService ..> Repository
+GovernanceService ..> Repository
+QueryService ..> Repository
+Repository ..> Database
+note bottom of Product
+完整字段和其他持久对象见schema.sql。
+金额使用整数分；有效预约由部分唯一索引限制。
+end note
+@enduml

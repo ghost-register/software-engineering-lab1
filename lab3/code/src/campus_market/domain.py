@@ -1,6 +1,6 @@
 """Domain vocabulary and errors shared by application services."""
 
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, fields
 from enum import StrEnum
 from typing import Any
 
@@ -56,7 +56,7 @@ class User:
     @classmethod
     def from_row(cls, row):
         """Read only the explicitly public identity columns."""
-        return cls(**{name: row[name] for name in cls.__dataclass_fields__})
+        return cls(**{field.name: row[field.name] for field in fields(cls)})
 
     def to_dict(self) -> dict:
         """Serialize the safe identity for views and API responses."""
@@ -77,7 +77,7 @@ class Product:
     @classmethod
     def from_row(cls, row):
         """Construct the domain projection used by transition guards."""
-        return cls(**{name: row[name] for name in cls.__dataclass_fields__})
+        return cls(**{field.name: row[field.name] for field in fields(cls)})
 
 
 @dataclass(frozen=True)
@@ -93,7 +93,7 @@ class Reservation:
     @classmethod
     def from_row(cls, row):
         """Convert a persisted reservation into a transition projection."""
-        return cls(**{name: row[name] for name in cls.__dataclass_fields__})
+        return cls(**{field.name: row[field.name] for field in fields(cls)})
 
 
 @dataclass

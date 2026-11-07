@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}<h1>商品详情</h1><section class="card detail-layout">
 <div>{% for image in product.images %}<img class="uploaded" src="/api/images/{{ image.id }}" alt="{{ product.title }}实物图{{ loop.index }}">{% else %}<div class="product-art">暂无图片</div>{% endfor %}</div>
-<div><p class="badge">{{ product.status }}</p><h2>{{ product.title or '未命名草稿' }}</h2><p class="price">{{ product.price_cents|yuan }}</p>
+<div><p class="badge">{{ product.status|state_label }}</p><h2>{{ product.title or '未命名草稿' }}</h2><p class="price">{{ product.price_cents|yuan }}</p>
 <p>卖家：{{ product.seller_name }} · {{ product.category }} · {{ product.condition }}</p><p class="description">{{ product.description }}</p>
 <div class="actions">{% if identity and identity.user.id==product.seller_id %}<a class="button" href="/products/{{ product.id }}/edit">编辑 / 查看审核原因</a>
 {% elif identity and product.status=='PUBLISHED' %}<button class="primary" data-reserve="{{ product.id }}">预约商品</button><button data-recover="{{ product.id }}">查询上次预约结果</button>

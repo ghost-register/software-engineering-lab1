@@ -1,0 +1,38 @@
+@startuml
+skinparam defaultFontName Microsoft YaHei
+skinparam defaultFontSize 17
+skinparam shadowing false
+title 实验三 预约、幂等与SQLite事务
+actor 买家 as Buyer
+participant "Flask路由" as Web
+participant "TradingService" as Trade
+participant "Database / Repository" as Repo
+database SQLite as DB
+Buyer -> Web : POST预约，携带请求键和CSRF
+Web -> Web : 校验服务端会话与CSRF
+Web -> Trade : reserve(actor, product, key)
+Trade -> Repo : BEGIN IMMEDIATE
+Repo -> DB : 获得写事务；重新读取账号状态
+Trade -> Repo : 查询(user, action, key)结果
+alt 同键未过期且参数一致
+ Repo --> Trade : 原预约响应与当前状态
+else 同键参数不同
+ Repo --> Trade : 拒绝；回滚
+else 新请求或结果过期
+ Trade -> Repo : 校验归属、已发布及无有效预约
+ Trade -> Repo : 更新商品RESERVED
+ Trade -> Repo : 插入PENDING_SELLER预约与价格快照
+ note right of Repo
+ 部分唯一索引兜底；中途异常整体回滚。
+ 故障注入点位于更新商品后。
+ end note
+ Trade -> Repo : 保存结果至少24小时与成功日志
+end
+Trade -> Repo : COMMIT；异常则ROLLBACK后另记失败日志
+Trade --> Web : 原结果、当前预约与商品状态
+Web --> Buyer : JSON响应或状态冲突提示
+note over Buyer,DB
+取消后重发旧键只恢复查询原结果，不重新建立预约。
+SQLite串行写替代实验二PostgreSQL行锁，不宣称写并行。
+end note
+@enduml

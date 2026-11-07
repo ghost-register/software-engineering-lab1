@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}<h1>{{ '编辑商品' if product else '发布商品草稿' }}</h1>
-{% if product and product.latest_review and product.latest_review.decision=='REJECTED' %}<section class="card warning"><h2>审核驳回，已退回草稿</h2><p class="description">{{ product.latest_review.reason }}</p><p>审核时间：{{ product.latest_review.handled_at }}</p></section>{% endif %}
+{% if product and product.latest_review and product.latest_review.decision=='REJECTED' %}<section class="card warning"><h2>审核驳回，已退回草稿</h2><p class="description">{{ product.latest_review.reason }}</p><p>审核时间：{{ product.latest_review.handled_at|local_time }}</p></section>{% endif %}
 <form class="card" data-api="{{ '/api/products/'+product.id if product else '/api/products' }}" data-method="{{ 'PATCH' if product else 'POST' }}" data-created="product">
 {% if product %}<input type="hidden" name="version" value="{{ product.version }}">{% endif %}
 <label>标题<input name="title" maxlength="50" value="{{ product.title if product else '' }}"></label>

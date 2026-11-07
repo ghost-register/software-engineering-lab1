@@ -1,0 +1,210 @@
+* Getting build dependencies for sdist...
+running egg_info
+writing src\campus_market_lab3.egg-info\PKG-INFO
+writing dependency_links to src\campus_market_lab3.egg-info\dependency_links.txt
+writing entry points to src\campus_market_lab3.egg-info\entry_points.txt
+writing requirements to src\campus_market_lab3.egg-info\requires.txt
+writing top-level names to src\campus_market_lab3.egg-info\top_level.txt
+reading manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+* Building sdist...
+running sdist
+running egg_info
+writing src\campus_market_lab3.egg-info\PKG-INFO
+writing dependency_links to src\campus_market_lab3.egg-info\dependency_links.txt
+writing entry points to src\campus_market_lab3.egg-info\entry_points.txt
+writing requirements to src\campus_market_lab3.egg-info\requires.txt
+writing top-level names to src\campus_market_lab3.egg-info\top_level.txt
+reading manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+running check
+creating campus_market_lab3-0.1.0
+creating campus_market_lab3-0.1.0\src\campus_market
+creating campus_market_lab3-0.1.0\src\campus_market\static
+creating campus_market_lab3-0.1.0\src\campus_market\templates
+creating campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+creating campus_market_lab3-0.1.0\tests
+creating campus_market_lab3-0.1.0\tools
+copying files to campus_market_lab3-0.1.0...
+copying MANIFEST.in -> campus_market_lab3-0.1.0
+copying README.md -> campus_market_lab3-0.1.0
+copying pyproject.toml -> campus_market_lab3-0.1.0
+copying requirements-lock.txt -> campus_market_lab3-0.1.0
+copying start.ps1 -> campus_market_lab3-0.1.0
+copying 启动应用.cmd -> campus_market_lab3-0.1.0
+copying src\campus_market\__init__.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\auth.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\cli.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\database.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\domain.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\governance.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\images.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\maintenance.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\products.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\queries.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\repository.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\schema.sql -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\seed.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\service.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\trading.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\validation.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\web.py -> campus_market_lab3-0.1.0\src\campus_market
+copying src\campus_market\static\app.css -> campus_market_lab3-0.1.0\src\campus_market\static
+copying src\campus_market\static\app.js -> campus_market_lab3-0.1.0\src\campus_market\static
+copying src\campus_market\templates\admin.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\auth.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\base.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\editor.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\error.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\market.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\product.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\records.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\reservations.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market\templates\selling.html -> campus_market_lab3-0.1.0\src\campus_market\templates
+copying src\campus_market_lab3.egg-info\PKG-INFO -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying src\campus_market_lab3.egg-info\SOURCES.txt -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying src\campus_market_lab3.egg-info\dependency_links.txt -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying src\campus_market_lab3.egg-info\entry_points.txt -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying src\campus_market_lab3.egg-info\requires.txt -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying src\campus_market_lab3.egg-info\top_level.txt -> campus_market_lab3-0.1.0\src\campus_market_lab3.egg-info
+copying tests\test_market.py -> campus_market_lab3-0.1.0\tests
+copying tools\benchmark.py -> campus_market_lab3-0.1.0\tools
+copying tools\count_lines.py -> campus_market_lab3-0.1.0\tools
+Writing campus_market_lab3-0.1.0\setup.cfg
+Creating tar archive
+removing 'campus_market_lab3-0.1.0' (and everything under it)
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+running egg_info
+writing src\campus_market_lab3.egg-info\PKG-INFO
+writing dependency_links to src\campus_market_lab3.egg-info\dependency_links.txt
+writing entry points to src\campus_market_lab3.egg-info\entry_points.txt
+writing requirements to src\campus_market_lab3.egg-info\requires.txt
+writing top-level names to src\campus_market_lab3.egg-info\top_level.txt
+reading manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+* Building wheel...
+running bdist_wheel
+running build
+running build_py
+creating build\lib\campus_market
+copying src\campus_market\auth.py -> build\lib\campus_market
+copying src\campus_market\cli.py -> build\lib\campus_market
+copying src\campus_market\database.py -> build\lib\campus_market
+copying src\campus_market\domain.py -> build\lib\campus_market
+copying src\campus_market\governance.py -> build\lib\campus_market
+copying src\campus_market\images.py -> build\lib\campus_market
+copying src\campus_market\maintenance.py -> build\lib\campus_market
+copying src\campus_market\products.py -> build\lib\campus_market
+copying src\campus_market\queries.py -> build\lib\campus_market
+copying src\campus_market\repository.py -> build\lib\campus_market
+copying src\campus_market\seed.py -> build\lib\campus_market
+copying src\campus_market\service.py -> build\lib\campus_market
+copying src\campus_market\trading.py -> build\lib\campus_market
+copying src\campus_market\validation.py -> build\lib\campus_market
+copying src\campus_market\web.py -> build\lib\campus_market
+copying src\campus_market\__init__.py -> build\lib\campus_market
+running egg_info
+writing src\campus_market_lab3.egg-info\PKG-INFO
+writing dependency_links to src\campus_market_lab3.egg-info\dependency_links.txt
+writing entry points to src\campus_market_lab3.egg-info\entry_points.txt
+writing requirements to src\campus_market_lab3.egg-info\requires.txt
+writing top-level names to src\campus_market_lab3.egg-info\top_level.txt
+reading manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+reading manifest template 'MANIFEST.in'
+writing manifest file 'src\campus_market_lab3.egg-info\SOURCES.txt'
+copying src\campus_market\schema.sql -> build\lib\campus_market
+creating build\lib\campus_market\templates
+copying src\campus_market\templates\admin.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\auth.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\base.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\editor.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\error.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\market.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\product.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\records.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\reservations.html -> build\lib\campus_market\templates
+copying src\campus_market\templates\selling.html -> build\lib\campus_market\templates
+creating build\lib\campus_market\static
+copying src\campus_market\static\app.css -> build\lib\campus_market\static
+copying src\campus_market\static\app.js -> build\lib\campus_market\static
+installing to build\bdist.win-amd64\wheel
+running install
+running install_lib
+creating build\bdist.win-amd64\wheel
+creating build\bdist.win-amd64\wheel\campus_market
+copying build\lib\campus_market\auth.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\cli.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\database.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\domain.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\governance.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\images.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\maintenance.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\products.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\queries.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\repository.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\schema.sql -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\seed.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\service.py -> build\bdist.win-amd64\wheel\.\campus_market
+creating build\bdist.win-amd64\wheel\campus_market\static
+copying build\lib\campus_market\static\app.css -> build\bdist.win-amd64\wheel\.\campus_market\static
+copying build\lib\campus_market\static\app.js -> build\bdist.win-amd64\wheel\.\campus_market\static
+creating build\bdist.win-amd64\wheel\campus_market\templates
+copying build\lib\campus_market\templates\admin.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\auth.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\base.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\editor.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\error.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\market.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\product.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\records.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\reservations.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\templates\selling.html -> build\bdist.win-amd64\wheel\.\campus_market\templates
+copying build\lib\campus_market\trading.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\validation.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\web.py -> build\bdist.win-amd64\wheel\.\campus_market
+copying build\lib\campus_market\__init__.py -> build\bdist.win-amd64\wheel\.\campus_market
+running install_egg_info
+Copying src\campus_market_lab3.egg-info to build\bdist.win-amd64\wheel\.\campus_market_lab3-0.1.0-py3.12.egg-info
+running install_scripts
+creating build\bdist.win-amd64\wheel\campus_market_lab3-0.1.0.dist-info\WHEEL
+creating 'C:\\Users\\25574\\Documents\\Codex\\2026-10-27\\ni\\work\\submission-repository\\lab3\\code\\dist\\.tmp-h_qohomj\\campus_market_lab3-0.1.0-py3-none-any.whl' and adding 'build\\bdist.win-amd64\\wheel' to it
+adding 'campus_market/__init__.py'
+adding 'campus_market/auth.py'
+adding 'campus_market/cli.py'
+adding 'campus_market/database.py'
+adding 'campus_market/domain.py'
+adding 'campus_market/governance.py'
+adding 'campus_market/images.py'
+adding 'campus_market/maintenance.py'
+adding 'campus_market/products.py'
+adding 'campus_market/queries.py'
+adding 'campus_market/repository.py'
+adding 'campus_market/schema.sql'
+adding 'campus_market/seed.py'
+adding 'campus_market/service.py'
+adding 'campus_market/trading.py'
+adding 'campus_market/validation.py'
+adding 'campus_market/web.py'
+adding 'campus_market/static/app.css'
+adding 'campus_market/static/app.js'
+adding 'campus_market/templates/admin.html'
+adding 'campus_market/templates/auth.html'
+adding 'campus_market/templates/base.html'
+adding 'campus_market/templates/editor.html'
+adding 'campus_market/templates/error.html'
+adding 'campus_market/templates/market.html'
+adding 'campus_market/templates/product.html'
+adding 'campus_market/templates/records.html'
+adding 'campus_market/templates/reservations.html'
+adding 'campus_market/templates/selling.html'
+adding 'campus_market_lab3-0.1.0.dist-info/METADATA'
+adding 'campus_market_lab3-0.1.0.dist-info/WHEEL'
+adding 'campus_market_lab3-0.1.0.dist-info/entry_points.txt'
+adding 'campus_market_lab3-0.1.0.dist-info/top_level.txt'
+adding 'campus_market_lab3-0.1.0.dist-info/RECORD'
+removing build\bdist.win-amd64\wheel
+Successfully built campus_market_lab3-0.1.0.tar.gz and campus_market_lab3-0.1.0-py3-none-any.whl

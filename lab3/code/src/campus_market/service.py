@@ -14,11 +14,20 @@ def audit(repo, actor_id, action, object_id, result, before=None, after=None, re
     """Store a bounded, structured event without credential or payload data."""
     if actor_id and repo.one("SELECT id FROM users WHERE id=?", (actor_id,)) is None:
         actor_id = None
-    repo.insert("audit_logs", {
-        "id": new_id(), "actor_id": actor_id, "action": action,
-        "object_id": object_id, "result": result, "before_state": before,
-        "after_state": after, "reason": reason, "created_at": now(),
-    })
+    repo.insert(
+        "audit_logs",
+        {
+            "id": new_id(),
+            "actor_id": actor_id,
+            "action": action,
+            "object_id": object_id,
+            "result": result,
+            "before_state": before,
+            "after_state": after,
+            "reason": reason,
+            "created_at": now(),
+        },
+    )
 
 
 class Service:
@@ -49,8 +58,16 @@ class Service:
                 actor = repo.actor(actor_id)
                 change = operation(repo, actor)
                 self.checkpoint(action, "before_commit")
-                audit(repo, actor_id, action, change.object_id or object_id, "SUCCESS",
-                      change.before, change.after, change.reason)
+                audit(
+                    repo,
+                    actor_id,
+                    action,
+                    change.object_id or object_id,
+                    "SUCCESS",
+                    change.before,
+                    change.after,
+                    change.reason,
+                )
                 return change.value
         except DomainError as exc:
             self.failure(actor_id, action, object_id, exc.message)
